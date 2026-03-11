@@ -3,10 +3,12 @@
 NASA Neo-Sentinel: 70 Years of Planetary Defense
 
 **Panoramica del Progetto**
+
 Neo-Sentinel è una piattaforma web interattiva creata in occasione del 70° anniversario della NASA. Il progetto si propone di trasformare i dati scientifici complessi relativi ai Near-Earth Objects (NEO) in un'esperienza esplorativa immersiva.
 Il sito funge da "Centro di Controllo" digitale, dove l'utente assume il ruolo di operatore per monitorare gli asteroidi che transitano vicino al nostro pianeta.
 
 **Obiettivi Formativi (Media Interaction)**
+
 Il progetto esplora diverse dinamiche di interazione uomo-macchina:
 
 - Data Visualization: Traduzione dei dati numerici delle API NASA in forme geometriche e scale dimensionali intuitive.
@@ -14,6 +16,7 @@ Il progetto esplora diverse dinamiche di interazione uomo-macchina:
 - Storytelling Interattivo: Celebrazione dei 70 anni della NASA attraverso l'evoluzione del monitoraggio spaziale.
 
 **Funzionalità Principali**
+
 1. Radar Dinamico (Live Tracking)
 - Sfruttando le API NeoWs (Near Earth Object Web Service), il sistema genera un radar interattivo che posiziona gli asteroidi di oggi in base alla loro distanza reale dalla Terra.
 - Interazione: Ogni oggetto è cliccabile per rivelare dettagli tecnici avanzati.
@@ -26,12 +29,14 @@ Il progetto esplora diverse dinamiche di interazione uomo-macchina:
 - In caso di rilevamento di un oggetto "Potenzialmente Pericoloso", l'intera interfaccia subisce una mutazione cromatica (Warning State), dimostrando la capacità del sistema di comunicare urgenza attraverso il design.
 
 **Stack Tecnologico**
+
 - Linguaggi: HTML5, CSS3 (Custom Properties & Animations), JavaScript (ES6+).
 - Styling: Tailwind CSS per un'interfaccia responsive e moderna.
 - Data Fetching: Fetch API per l'integrazione con i server NASA.
 - Visualizzazione: Chart.js / SVG Dinamici per le rappresentazioni grafiche.
 
 **Design System**
+
 Il design è ispirato ai NASA Graphics Standards e ai centri di comando aerospaziali:
 
 - Tipografia: Inter per la leggibilità e JetBrains Mono per i dati tecnici.
@@ -41,6 +46,7 @@ Il design è ispirato ai NASA Graphics Standards e ai centri di comando aerospaz
 - #1E293B (Slate - Pannelli di Controllo)
 
 **Integrazione API**
+
 Il progetto interroga l'endpoint feed della NASA:
 
 // Esempio di chiamata API
@@ -48,6 +54,7 @@ const API_URL = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${today}&api_k
 
 
 **I dati estratti includono:**
+
 - estimated_diameter: Per la scala visiva.
 - relative_velocity: Per le animazioni di movimento.
 - is_potentially_hazardous_asteroid: Per la logica di allerta del sistema.
