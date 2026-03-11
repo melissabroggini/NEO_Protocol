@@ -33,7 +33,7 @@ Il progetto esplora diverse dinamiche di interazione uomo-macchina:
 
 **Stack Tecnologico**
 
-- Linguaggi: HTML5, CSS3 (Custom Properties & Animations), JavaScript (ES6+).
+- Linguaggi: HTML5, JavaScript.
 - Styling: Tailwind CSS per un'interfaccia responsive e moderna.
 - Data Fetching: Fetch API per l'integrazione con i server NASA.
 - Visualizzazione: Chart.js / SVG Dinamici per le rappresentazioni grafiche.
@@ -42,9 +42,10 @@ Il progetto esplora diverse dinamiche di interazione uomo-macchina:
 **Design System**
 
 Il design è ispirato ai NASA Graphics Standards e ai centri di comando aerospaziali:
+- Tipografia: Helvetica per la leggibilità e JetBrains Mono per i dati tecnici.
 
-- Tipografia: Inter per la leggibilità e JetBrains Mono per i dati tecnici.
-- Palette Colori: * #0A0A0A (Space Black - Sfondo)
+Palette Colori:
+- #0A0A0A (Space Black - Sfondo)
 - #00FF41 (Data Green - Stato Sicuro)
 - #FF3E3E (Alert Red - Stato di Pericolo)
 - #1E293B (Slate - Pannelli di Controllo)
@@ -56,11 +57,3 @@ Il progetto interroga l'endpoint feed della NASA:
 
 // Esempio di chiamata API
 const API_URL = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${today}&api_key=${YOUR_KEY}`;
-
-
-
-**I dati estratti includono:**
-
-- estimated_diameter: Per la scala visiva.
-- relative_velocity: Per le animazioni di movimento.
-- is_potentially_hazardous_asteroid: Per la logica di allerta del sistema.
