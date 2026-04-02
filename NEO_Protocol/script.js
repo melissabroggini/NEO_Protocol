@@ -643,6 +643,9 @@ function focusOnAsteroid(ast) {
         .start();
 }
 
+const INITIAL_CAM_POS = new THREE.Vector3(0, 5, 20);
+const INITIAL_CAM_TARGET = new THREE.Vector3(0, 0, 0);
+
 function resetCamera() {
     closePanel();
     if (currentTween) currentTween.stop();
@@ -651,8 +654,8 @@ function resetCamera() {
     camStartPos.copy(camera.position); targetStartPos.copy(controls.target);
     currentTween = new TWEEN.Tween({ t: 0 }).to({ t: 1 }, 1500).easing(TWEEN.Easing.Cubic.InOut)
         .onUpdate((obj) => {
-            camera.position.lerpVectors(camStartPos, new THREE.Vector3(0, LUNAR_DISTANCE_VISUAL * 1.5, LUNAR_DISTANCE_VISUAL * 2.5), obj.t);
-            controls.target.lerpVectors(targetStartPos, new THREE.Vector3(0, 0, 0), obj.t);
+            camera.position.lerpVectors(camStartPos, INITIAL_CAM_POS, obj.t);
+            controls.target.lerpVectors(targetStartPos, INITIAL_CAM_TARGET, obj.t);
         })
         .onComplete(() => { isZooming = false; controls.enabled = true; controls.minDistance = 3.5; })
         .start();
