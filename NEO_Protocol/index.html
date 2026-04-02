@@ -151,12 +151,6 @@
                         <span class="text-[11px] text-primary/50 uppercase">Active Threats</span>
                         <span id="stat-threats" class="text-xl text-primary text-glow font-bold">--</span>
                     </div>
-                    <div class="flex justify-between items-end pb-1 mt-2">
-                        <button id="reset-cam-btn"
-                            class="w-full py-2 bg-primary/10 hover:bg-primary/30 text-primary border border-primary/30 text-[10px] font-bold tracking-widest uppercase transition rounded-xl">
-                            Reset Camera
-                        </button>
-                    </div>
                 </div>
             </div>
 
@@ -166,12 +160,28 @@
                     <h2
                         class="font-display font-semibold text-sm tracking-wide-custom text-primary uppercase flex items-center gap-3">
                         <span class="material-symbols-outlined text-base">bar_chart</span>
-                        APPROACH DIST. (K KM)
+                        VELOCITY (KM/S)
                     </h2>
                 </div>
-                <div id="env-chart-container"
-                    class="w-full h-40 border border-primary/5 relative mt-2 flex items-end p-2 gap-1.5 radar-grid group/chart rounded-xl overflow-hidden">
-                    <div class="text-primary/30 text-[10px] w-full text-center my-auto">CALCULATING DISTRIBUTIONS...
+                <div class="w-full h-40 flex flex-col mt-2">
+                    <div class="flex-1 flex">
+                        <!-- Y-Axis (Quantity) -->
+                        <div id="chart-y-axis" class="w-6 flex flex-col justify-between text-[8px] font-mono text-primary/50 text-right pr-2 h-full pb-0.5 relative">
+                            <span id="chart-max-y">MAX</span>
+                            <span>0</span>
+                        </div>
+                        <!-- Chart Bars Container -->
+                        <div id="env-chart-container" class="flex-1 border-l border-b border-primary/40 relative flex items-end gap-1 px-1 pt-4 group/chart radar-grid">
+                            <div class="text-primary/30 text-[10px] w-full text-center my-auto">CALCULATING DISTRIBUTIONS...</div>
+                        </div>
+                    </div>
+                    <!-- X-Axis (Velocity) -->
+                    <div class="w-full flex pl-6">
+                        <div id="chart-x-axis" class="flex-1 flex justify-between text-[8px] font-mono text-primary/50 pt-1 px-1">
+                            <span>0</span>
+                            <span>15</span>
+                            <span>30+</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -281,7 +291,13 @@
 
             <!-- Timeline wrapper (holographic container) -->
             <div id="timeline-container"
-                class="flex-1 max-w-[600px] holographic-panel backdrop-blur-[2px] bg-primary/[0.02] p-3 flex flex-col items-center opacity-0 transition-opacity duration-500 rounded-2xl border border-primary/20">
+                class="flex-1 max-w-[600px] holographic-panel backdrop-blur-[2px] bg-primary/[0.02] p-3 flex flex-col items-center opacity-0 transition-opacity duration-500 rounded-2xl border border-primary/20 relative">
+                
+                <!-- Reset Button -->
+                <button id="reset-cam-btn"
+                    class="absolute -top-10 left-1/2 -translate-x-1/2 px-8 py-1.5 bg-primary/5 hover:bg-primary/20 text-primary border border-primary/30 text-[10px] font-bold tracking-widest uppercase transition rounded-xl backdrop-blur-md shadow-neon cursor-pointer">
+                    Reset Camera
+                </button>
                 <div
                     class="flex justify-between w-full text-[9px] text-primary/50 font-mono mb-2 uppercase tracking-widest">
                     <span id="time-start">--</span>
@@ -296,9 +312,9 @@
                     <div class="flex gap-3 ml-2 shrink-0 font-mono text-[13px] font-bold">
                         <button class="speed-btn text-primary/40 hover:text-primary transition-colors"
                             data-speed="1">1X</button>
-                        <button class="speed-btn text-primary text-glow transition-colors" data-speed="5000">5X</button>
+                        <button class="speed-btn text-primary text-glow transition-colors" data-speed="10000">10X</button>
                         <button class="speed-btn text-primary/40 hover:text-primary transition-colors"
-                            data-speed="10000">10X</button>
+                            data-speed="100000">100X</button>
                     </div>
                 </div>
             </div>
