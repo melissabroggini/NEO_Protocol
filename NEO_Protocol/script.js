@@ -22,7 +22,7 @@ let simTimeStart = 0;
 let simTimeEnd = 0;
 let currentSimTime = 0;
 const TIME_MULTIPLIER = 1000; // Real-time: 1 real second = 1 sim second
-let currentMultiplierFactor = 5000; // Default: 5X speed
+let currentMultiplierFactor = 10000; // Default: 10X speed
 
 const NASA_API_KEY = 'QgMgvoTOhWkOdGyMmM6ksu79G6yrTR6P6jgg36FU';
 
@@ -324,6 +324,28 @@ function createInteractiveAsteroids(neos) {
     let nearestDist = Infinity;
     let nearestKm = Infinity;
 
+    // --- CREATE HALO TEXTURES ONCE ---
+    const createHaloTexture = (isHazard) => {
+        const c = document.createElement('canvas');
+        c.width = 128; c.height = 128;
+        const ctx = c.getContext('2d');
+        const grad = ctx.createRadialGradient(64, 64, 4, 64, 64, 60);
+        if (isHazard) {
+            grad.addColorStop(0,   'rgba(255, 60,  30, 0.9)');
+            grad.addColorStop(0.3, 'rgba(255, 40,  10, 0.5)');
+            grad.addColorStop(1,   'rgba(255,  0,   0, 0.0)');
+        } else {
+            grad.addColorStop(0,   'rgba(80, 255, 120, 0.9)');
+            grad.addColorStop(0.3, 'rgba(30, 255,  80, 0.5)');
+            grad.addColorStop(1,   'rgba( 0, 255,   0, 0.0)');
+        }
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 128, 128);
+        return new THREE.CanvasTexture(c);
+    };
+    const texHazard = createHaloTexture(true);
+    const texSafe = createHaloTexture(false);
+
     neos.forEach((neo) => {
         const isHazardous = neo.is_potentially_hazardous_asteroid;
         if (isHazardous) phaCount++;
@@ -356,6 +378,21 @@ function createInteractiveAsteroids(neos) {
         });
         const marker = new THREE.Points(markerGeo, markerMat);
         astMesh.add(marker);
+
+        // --- HALO / AUREOLA PULSANTE ---
+        const haloBaseScale = isHazardous ? 35 : 25;
+        const haloMat = new THREE.PointsMaterial({
+            map: isHazardous ? texHazard : texSafe, 
+            transparent: true, opacity: 0.75,
+            blending: THREE.AdditiveBlending, depthWrite: false,
+            sizeAttenuation: false, size: haloBaseScale
+        });
+        const haloPoints = new THREE.Points(markerGeo, haloMat);
+        // Give each halo a random phase offset so they don't all pulse in sync
+        haloPoints.userData.pulseOffset = Math.random() * Math.PI * 2;
+        haloPoints.userData.baseScale = haloBaseScale;
+        astMesh.add(haloPoints);
+        astMesh.userData.halo = haloPoints;
 
         let i_rad = 0, node_rad = 0, arg_p_rad = 0;
         if (neo.orbital_data) {
@@ -432,37 +469,68 @@ function createInteractiveAsteroids(neos) {
         ast.userData.radarBlip = blip;
     });
 
-    // Populate Distance Chart
-    const distancesKm = neos.map(neo => parseFloat(neo.close_approach_data[0].miss_distance.kilometers) / 1000);
-    const bins = [0, 0, 0, 0, 0, 0]; // <5M, <10M, <15M, <20M, <25M, 25M+ KM (which is 5000 K KM steps)
-    distancesKm.forEach(d => {
-        if (d < 5000) bins[0]++;
-        else if (d < 10000) bins[1]++;
-        else if (d < 15000) bins[2]++;
-        else if (d < 20000) bins[3]++;
-        else if (d < 25000) bins[4]++;
-        else bins[5]++;
+    // Populate Velocity Chart
+    const speeds = neos.map(neo => parseFloat(neo.close_approach_data[0].relative_velocity.kilometers_per_second));
+    const maxSpeed = Math.ceil(Math.max(...speeds)) || 1;
+    
+    // Creiamo 7 barre, dividendo la velocità massima in 7 intervalli
+    const binSize = maxSpeed / 7;
+    const bins = [0, 0, 0, 0, 0, 0, 0];
+    
+    speeds.forEach(v => {
+        let index = Math.floor(v / binSize);
+        if (index > 6) index = 6;
+        bins[index]++;
     });
     const maxBin = Math.max(...bins) || 1;
+
+    // Aggiorna l'asse Y (che rappresenta il numero/quantità di asteroidi)
+    const yMaxLabel = document.getElementById('chart-max-y');
+    if (yMaxLabel) yMaxLabel.innerText = maxBin;
+
+    // Aggiorna l'asse X (prepara il contenitore per allineare i label alle barre)
+    const xAxisContainer = document.getElementById('chart-x-axis');
+    if (xAxisContainer) {
+        xAxisContainer.innerHTML = '';
+        // Riflette il flex gap e padding del grafico per un allineamento colonna-etichetta perfetto
+        xAxisContainer.className = 'flex-1 flex gap-1 px-1 text-[8px] font-mono text-primary/50 pt-1';
+    }
 
     const chartContainer = document.getElementById('env-chart-container');
     if (chartContainer) {
         chartContainer.innerHTML = '';
         bins.forEach((count, i) => {
-            const pct = (count / maxBin) * 80; // Max 80% to leave tooltip headroom
+            const pct = (count / maxBin) * 100; // Il massimo tocca perfettamente il MAX in y-axis
             const bar = document.createElement('div');
             const intensity = (count / maxBin); // 0.0 to 1.0
-            bar.className = 'w-full relative group/bar cursor-pointer transition-all duration-300 group-hover/chart:opacity-30 hover:!opacity-100 hover:!bg-primary/50 hover:!shadow-[0_0_15px_rgba(13,227,242,0.8)] rounded-t-md';
-            bar.style.height = `${pct}%`;
+            
+            bar.className = 'w-full relative group/bar cursor-pointer transition-all duration-300 group-hover/chart:opacity-30 hover:!opacity-100 hover:!bg-primary/50 hover:!shadow-[0_0_15px_rgba(13,227,242,0.8)]';
+            // Animazione dell'altezza
+            bar.style.height = `0%`;
+            setTimeout(() => { bar.style.height = `${pct}%`; }, 100 + i * 50);
+            
             bar.style.minHeight = count > 0 ? '4px' : '1px';
             bar.style.backgroundColor = `rgba(13, 227, 242, ${0.1 + intensity * 0.2})`;
             bar.style.borderTop = `1px solid rgba(13, 227, 242, ${0.3 + intensity * 0.5})`;
             if (intensity > 0.7) bar.style.boxShadow = '0 0 10px rgba(13,227,242,0.3)';
 
+            const startVal = Math.round(i * binSize);
+            const endVal = Math.round((i + 1) * binSize);
+            const labelRange = i === 6 ? `${startVal}+` : `${startVal}-${endVal}`;
+
+            // Aggiungo il testo sulla riga dell'Asse X, allineato visivamente sotto la barra appropriata
+            if (xAxisContainer) {
+                const labelSpan = document.createElement('span');
+                labelSpan.className = 'w-full flex-1 text-center truncate';
+                labelSpan.innerText = labelRange;
+                xAxisContainer.appendChild(labelSpan);
+            }
+
             const tooltip = document.createElement('div');
-            tooltip.className = 'absolute -top-6 left-1/2 -translate-x-1/2 hidden group-hover/bar:flex items-center justify-center bg-[#02040A] border border-primary/50 text-[9px] font-mono px-1.5 py-0.5 text-primary whitespace-nowrap z-50';
-            const labelRange = i === 5 ? '25000+' : `${i * 5000}-${i * 5000 + 5000}`;
-            tooltip.innerText = `${labelRange} K KM: ${count}`;
+            // Tooltip visibile con opacità per non sovrapporsi in modo sporco
+            tooltip.className = 'absolute bottom-full mb-1 left-1/2 -translate-x-1/2 opacity-0 group-hover/bar:opacity-100 transition-opacity flex items-center justify-center bg-[#02040A] border border-primary/50 text-[9px] font-mono px-2 py-1 text-primary whitespace-nowrap z-50 pointer-events-none rounded shadow-neon';
+            
+            tooltip.innerHTML = `<span class="opacity-50 mr-1 pb-0.5">${labelRange} km/s:</span><span class="font-bold text-glow text-[11px]">${count} AST.</span>`;
             bar.appendChild(tooltip);
 
             chartContainer.appendChild(bar);
@@ -535,7 +603,7 @@ function focusOnAsteroid(ast) {
 
     const b = document.getElementById('neo-hazard-badge');
     b.innerText = d.isHazardous ? "PHA THREAT" : "SAFE";
-    b.className = `inline-block px-2 py-1 rounded-xl text-center font-bold uppercase tracking-widest text-[#02040A] ${d.isHazardous ? 'bg-[#FF0000] shadow-neon-amber' : 'bg-[#00FF00] shadow-neon'}`;
+    b.className = `inline-block text-2xl text-center font-bold uppercase tracking-widest ${d.isHazardous ? 'text-[#FF0000] [text-shadow:0_0_8px_rgba(255,0,0,0.8)]' : 'text-[#00FF00] [text-shadow:0_0_8px_rgba(0,255,0,0.8)]'}`;
 
     document.getElementById('target-placeholder').classList.add('hidden');
     document.getElementById('target-details').classList.remove('hidden');
@@ -626,6 +694,27 @@ function animate(time) {
     realAsteroids.forEach(ast => {
         ast.rotation.x += 0.2 * delta;
         updateAsteroidPosition(ast, currentSimTime);
+
+        // Pulse the halo:
+        if (ast.userData.halo) {
+            const t = performance.now() / 1000;
+            // Oscilla fluidamente tra -1 e 1
+            const oscillator = Math.sin(t * 2.5 + ast.userData.halo.userData.pulseOffset);
+            
+            // Amplifica la pulsazione della grandezza (da 0.6x a 1.4x)
+            const pulse = 1.0 + 0.4 * oscillator;
+            
+            // Calcola la distanza dalla telecamera per scalare gli aloni e prevenire l'effetto "miasma" da lontano
+            const dist = camera.position.distanceTo(ast.position);
+            const zoomFactor = Math.max(0.18, Math.min(1.0, 50.0 / dist));
+            
+            const s = ast.userData.halo.userData.baseScale * pulse * zoomFactor;
+            ast.userData.halo.material.size = s;
+            
+            // Sincronizza l'opacità (da molto fioco a molto luminoso)
+            const baseOp = 0.5 + 0.35 * oscillator;
+            ast.userData.halo.material.opacity = baseOp * Math.max(0.6, zoomFactor);
+        }
     });
     if (trackedAsteroid) {
         let diff = new THREE.Vector3().subVectors(trackedAsteroid.position, oldAstPos);
