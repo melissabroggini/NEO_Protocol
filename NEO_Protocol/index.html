@@ -188,34 +188,6 @@
 
         <!-- Right Screen: Radar & Target Info -->
         <aside class="w-[340px] h-[calc(100vh-160px)] mt-16 z-20 flex flex-col gap-4 pointer-events-auto">
-            <div
-                class="holographic-panel p-4 flex flex-col gap-6 aspect-square backdrop-blur-[2px] bg-primary/[0.02] rounded-2xl border border-primary/20">
-                <div class="flex items-center justify-between border-b border-primary/10 pb-2">
-                    <span class="font-mono text-[9px] text-primary/30">SEC-7G</span>
-                    <h2
-                        class="font-display font-semibold text-sm tracking-wide-custom text-primary uppercase flex items-center gap-3">
-                        Local Radar
-
-                    </h2>
-                </div>
-                <!-- Simulated radar display -->
-                <div id="radar-container"
-                    class="relative w-full flex-1 rounded-full border border-primary/5 bg-transparent overflow-hidden flex items-center justify-center radar-grid">
-                    <div class="absolute w-[80%] h-[80%] rounded-full border border-primary/10 pointer-events-none">
-                    </div>
-                    <div class="absolute w-[60%] h-[60%] rounded-full border border-primary/10 pointer-events-none">
-                    </div>
-                    <div class="absolute w-[40%] h-[40%] rounded-full border border-primary/10 pointer-events-none">
-                    </div>
-                    <div
-                        class="absolute w-[20%] h-[20%] rounded-full border border-primary/20 bg-primary/5 pointer-events-none">
-                    </div>
-                    <div
-                        class="absolute w-[50%] h-[1px] bg-gradient-to-r from-transparent to-primary left-1/2 top-1/2 origin-left animate-[spin_5s_linear_infinite] z-10 pointer-events-none">
-                    </div>
-                    <div id="radar-blips" class="absolute inset-0 z-20 pointer-events-none"></div>
-                </div>
-            </div>
 
             <div id="info-panel"
                 class="holographic-panel p-4 flex flex-col gap-4 overflow-hidden backdrop-blur-[2px] bg-primary/[0.02] transition-opacity duration-500 opacity-30 rounded-2xl border border-primary/20">
@@ -225,8 +197,6 @@
 
                         Target Lock
                     </h2>
-                    <button id="close-btn"
-                        class="hidden text-primary/50 hover:text-primary hover:bg-primary/20 transition material-symbols-outlined text-sm rounded-full p-1">close</button>
                 </div>
 
                 <div class="font-mono text-[11px] leading-loose flex flex-col gap-2 overflow-y-auto w-full">

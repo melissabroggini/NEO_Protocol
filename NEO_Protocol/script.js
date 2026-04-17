@@ -46,7 +46,7 @@ function init() {
     playPauseBtn = document.getElementById('play-pause-btn');
 
     setInterval(() => {
-        document.getElementById('local-time').innerText = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }) + ' GMT';
+        document.getElementById('local-time').innerText = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23', timeZone: 'Europe/Zurich', timeZoneName: 'short' });
     }, 1000);
 
     const container = document.getElementById('canvas-container');
@@ -118,7 +118,7 @@ function init() {
 
     window.addEventListener('resize', onWindowResize);
     renderer.domElement.addEventListener('pointerdown', onPointerDown);
-    closeBtn.addEventListener('click', closePanel);
+    if (closeBtn) closeBtn.addEventListener('click', closePanel);
     resetBtn.addEventListener('click', resetCamera);
 
     animate();
@@ -202,54 +202,32 @@ function createStarfield() {
 
 async function fetchNASAData(useCachedVersion = true) {
     try {
-        const fetchWeek = async (offsetStart) => {
-            const start = new Date();
-            start.setDate(start.getDate() + offsetStart);
-            const end = new Date(start);
-            end.setDate(end.getDate() + 6);
-            const startStr = start.toISOString().split('T')[0];
-            const endStr = end.toISOString().split('T')[0];
-            const url = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${startStr}&end_date=${endStr}&api_key=${NASA_API_KEY}`;
-            const res = await fetch(url);
-            if (!res.ok) throw new Error();
-            return await res.json();
-        };
-
-        loadingText.innerText = "SYNCING NASA JPL PROTOCOL...";
-
-        const promises = [fetchWeek(-7), fetchWeek(0), fetchWeek(7)];
-        const results = await Promise.all(promises);
+        loadingText.innerText = "LOADING LOCAL SNAPSHOT...";
+        const res = await fetch('snapshot.json');
+        if (!res.ok) throw new Error();
+        const data = await res.json();
 
         let allNeos = [];
-        results.forEach(data => {
-            if (data && data.near_earth_objects) {
-                Object.keys(data.near_earth_objects).forEach(date => allNeos = allNeos.concat(data.near_earth_objects[date]));
-            }
-        });
+        if (data && data.near_earth_objects) {
+            Object.keys(data.near_earth_objects).forEach(date => allNeos = allNeos.concat(data.near_earth_objects[date]));
+        }
 
         const uniqueNeos = Array.from(new Map(allNeos.map(item => [item.id, item])).values());
 
-        loadingText.innerText = `FETCHING ORBITAL ELEMENTS... [${uniqueNeos.length}]`;
-        const detailedNeos = await Promise.all(
-            uniqueNeos.map(async (neo) => {
-                try {
-                    const res = await fetch(`https://api.nasa.gov/neo/rest/v1/neo/${neo.id}?api_key=${NASA_API_KEY}`);
-                    if (res.ok) {
-                        const details = await res.json();
-                        details.close_approach_data = neo.close_approach_data;
-                        return details;
-                    }
-                } catch (e) { }
-                return neo;
-            })
-        );
-
-        const validDetailedNeos = detailedNeos.filter(n => n.orbital_data);
+        // Add mock orbital data to avoid hitting individual NEO endpoints
+        const validDetailedNeos = uniqueNeos.map(neo => {
+            neo.orbital_data = {
+                inclination: Math.random() * 30,
+                ascending_node_longitude: Math.random() * 360,
+                perihelion_argument: Math.random() * 360
+            };
+            return neo;
+        });
 
         setupTimelineAndAsteroids(validDetailedNeos);
 
     } catch (error) {
-        loadingText.innerHTML = "NASA LIMIT REACHED.<br>INITIATING LOCAL MOCK SIMULATION...";
+        loadingText.innerHTML = "SNAPSHOT ERROR.<br>INITIATING LOCAL MOCK SIMULATION...";
         setTimeout(() => setupTimelineAndAsteroids(generateMockData(150)), 2000);
     }
 }
@@ -299,7 +277,7 @@ function setupTimelineAndAsteroids(neos) {
 
 function updateTimelineUI() {
     const dateObj = new Date(currentSimTime);
-    timeCurrentLabel.innerText = dateObj.toLocaleDateString('en-US', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' }) + " | " + dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }) + " GMT";
+    timeCurrentLabel.innerText = dateObj.toLocaleDateString('en-US', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Europe/Zurich' }) + " | " + dateObj.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23', timeZone: 'Europe/Zurich', timeZoneName: 'short' });
     if (isPlaying) timeSlider.value = ((currentSimTime - simTimeStart) / (simTimeEnd - simTimeStart)) * 1000;
 }
 
@@ -427,7 +405,7 @@ function createInteractiveAsteroids(neos) {
             points.push(periapsisDir.clone().multiplyScalar(r * Math.cos(theta)).add(semiMinorDir.clone().multiplyScalar(r * Math.sin(theta))));
         }
         const trajMat = new THREE.LineBasicMaterial({
-            color: colorHex, transparent: true, opacity: isHazardous ? 0.3 : 0.15, blending: THREE.AdditiveBlending
+            color: colorHex, transparent: true, opacity: isHazardous ? 0.8 : 0.5, blending: THREE.AdditiveBlending
         });
         const traj = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), trajMat);
         scene.add(traj);
@@ -437,7 +415,7 @@ function createInteractiveAsteroids(neos) {
             name: neo.name, isHazardous,
             diameter: `${Math.round(neo.estimated_diameter.meters.estimated_diameter_min)}-${Math.round(neo.estimated_diameter.meters.estimated_diameter_max)}m`,
             speed: speedKps.toFixed(2), km: d_km.toLocaleString('it-IT'), k_km: k_km.toLocaleString('en-US', { maximumFractionDigits: 0 }),
-            date: new Date(parseInt(approach.epoch_date_close_approach)).toLocaleString('it-IT'),
+            date: new Date(parseInt(approach.epoch_date_close_approach)).toLocaleString('it-IT', { timeZone: 'Europe/Zurich', timeZoneName: 'short' }),
             approachTimestamp: parseInt(approach.epoch_date_close_approach),
             periapsisDir, semiMinorDir, e, a: a_visual, n: n_rad_hr, traj
         };
@@ -611,12 +589,12 @@ function focusOnAsteroid(ast) {
 
     infoPanel.classList.remove('opacity-30', 'opacity-40');
     infoPanel.classList.add('opacity-100');
-    closeBtn.classList.remove('hidden');
+    if (closeBtn) closeBtn.classList.remove('hidden');
 
     if (currentTween) currentTween.stop();
-    if (trackedAsteroid) trackedAsteroid.userData.traj.material.opacity = trackedAsteroid.userData.isHazardous ? 0.3 : 0.15;
+    if (trackedAsteroid) trackedAsteroid.userData.traj.material.opacity = trackedAsteroid.userData.isHazardous ? 0.8 : 0.5;
     trackedAsteroid = ast;
-    trackedAsteroid.userData.traj.material.opacity = 0.9;
+    trackedAsteroid.userData.traj.material.opacity = 1.0;
 
     camStartPos.copy(camera.position);
     targetStartPos.copy(controls.target);
@@ -649,7 +627,7 @@ const INITIAL_CAM_TARGET = new THREE.Vector3(0, 0, 0);
 function resetCamera() {
     closePanel();
     if (currentTween) currentTween.stop();
-    if (trackedAsteroid) trackedAsteroid.userData.traj.material.opacity = trackedAsteroid.userData.isHazardous ? 0.3 : 0.15;
+    if (trackedAsteroid) trackedAsteroid.userData.traj.material.opacity = trackedAsteroid.userData.isHazardous ? 0.8 : 0.5;
     trackedAsteroid = null; isZooming = true; controls.enabled = false;
     camStartPos.copy(camera.position); targetStartPos.copy(controls.target);
     currentTween = new TWEEN.Tween({ t: 0 }).to({ t: 1 }, 1500).easing(TWEEN.Easing.Cubic.InOut)
@@ -667,7 +645,7 @@ function closePanel() {
     document.getElementById('target-details').classList.remove('flex');
     infoPanel.classList.add('opacity-40');
     infoPanel.classList.remove('opacity-100');
-    closeBtn.classList.add('hidden');
+    if (closeBtn) closeBtn.classList.add('hidden');
 }
 
 function onWindowResize() {
