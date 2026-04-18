@@ -209,7 +209,7 @@ function createStarfield() {
     starGeo.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
 
     const starMat = new THREE.PointsMaterial({
-        size: 2.5, vertexColors: true, transparent: true, opacity: 0.5, sizeAttenuation: false
+        size: 1.5, vertexColors: true, transparent: true, opacity: 0.25, sizeAttenuation: false
     });
     scene.add(new THREE.Points(starGeo, starMat));
 }
@@ -512,7 +512,7 @@ function createInteractiveAsteroids(neos) {
             points.push(periapsisDir.clone().multiplyScalar(r * Math.cos(theta)).add(semiMinorDir.clone().multiplyScalar(r * Math.sin(theta))));
         }
         const trajMat = new THREE.LineBasicMaterial({
-            color: colorHex, transparent: true, opacity: isHazardous ? 0.8 : 0.5, blending: THREE.AdditiveBlending
+            color: colorHex, transparent: true, opacity: isHazardous ? 0.4 : 0.2, blending: THREE.AdditiveBlending
         });
         const traj = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), trajMat);
         scene.add(traj);
