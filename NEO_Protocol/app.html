@@ -108,7 +108,7 @@
 
                         Global Stats
                     </h2>
-                    <span class="font-['Inter'] text-[9px] text-primary/30">OPT: 01A</span>
+
                 </div>
                 <div class="flex flex-col gap-5 font-['Inter']">
                     <div class="flex justify-between items-end border-b border-primary/5 pb-1">
@@ -116,7 +116,7 @@
                         <span id="stat-total" class="text-xl text-primary  font-bold">--</span>
                     </div>
                     <div class="flex justify-between items-end border-b border-primary/5 pb-1">
-                        <span class="text-[11px] text-outline uppercase">Nearest Appr.</span>
+                        <span class="text-[11px] text-outline uppercase">Nearest Approach</span>
                         <span id="stat-nearest" class="text-xl text-primary  font-bold">--K <span
                                 class="text-[10px] opacity-50">KM</span></span>
                     </div>
@@ -145,8 +145,10 @@
                     <div class="flex-1 flex">
                         <!-- Y-Axis (Quantity) -->
                         <div id="chart-y-axis"
-                            class="w-6 flex flex-col justify-between text-[8px] font-['Inter'] text-outline text-right pr-2 h-full pb-0.5 relative">
-                            <span id="chart-max-y">MAX</span>
+                            class="w-6 flex flex-col justify-between text-[8px] font-['Inter'] text-outline pb-1 pr-1 text-left">
+                            <span id="stat-y-100">--</span>
+                            <span id="stat-y-66">--</span>
+                            <span id="stat-y-33">--</span>
                             <span>0</span>
                         </div>
                         <!-- Chart Bars Container -->
@@ -198,15 +200,15 @@
 
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <h3 class="text-[9px] text-outline uppercase tracking-widest">Est. Diameter</h3>
+                                <h3 class="text-[9px] text-outline uppercase tracking-widest">Estimated Diameter</h3>
                                 <p id="neo-size" class="text-sm text-primary mt-1">-- m</p>
                             </div>
                             <div>
-                                <h3 class="text-[9px] text-outline uppercase tracking-widest">Rel. Velocity</h3>
+                                <h3 class="text-[9px] text-outline uppercase tracking-widest">Relative Velocity</h3>
                                 <p id="neo-speed" class="text-sm text-primary mt-1">-- km/s</p>
                             </div>
                             <div class="col-span-2">
-                                <h3 class="text-[9px] text-outline uppercase tracking-widest">Min. Distance</h3>
+                                <h3 class="text-[9px] text-outline uppercase tracking-widest">Minimum Distance</h3>
                                 <div class="flex items-baseline gap-2 mt-1">
                                     <p id="neo-distance" class="text-sm text-primary">-- km</p>
                                     <p id="neo-lunar" class="text-[10px] text-primary/60">(-- K KM)</p>

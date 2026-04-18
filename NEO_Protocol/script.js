@@ -559,11 +559,15 @@ function createInteractiveAsteroids(neos) {
         if (index > 6) index = 6;
         bins[index]++;
     });
-    const maxBin = Math.max(...bins) || 1;
+    const maxBin = 75;
 
     // Aggiorna l'asse Y (che rappresenta il numero/quantità di asteroidi)
-    const yMaxLabel = document.getElementById('chart-max-y');
-    if (yMaxLabel) yMaxLabel.innerText = maxBin;
+    const y100 = document.getElementById('stat-y-100');
+    const y66 = document.getElementById('stat-y-66');
+    const y33 = document.getElementById('stat-y-33');
+    if (y100) y100.innerText = "75";
+    if (y66) y66.innerText = "50";
+    if (y33) y33.innerText = "25";
 
     // Aggiorna l'asse X (prepara il contenitore per allineare i label alle barre)
     const xAxisContainer = document.getElementById('chart-x-axis');
@@ -577,7 +581,7 @@ function createInteractiveAsteroids(neos) {
     if (chartContainer) {
         chartContainer.innerHTML = '';
         bins.forEach((count, i) => {
-            const pct = (count / maxBin) * 100; // Il massimo tocca perfettamente il MAX in y-axis
+            const pct = Math.min((count / maxBin) * 100, 100); // Il massimo tocca perfettamente il MAX in y-axis
             const bar = document.createElement('div');
             const intensity = (count / maxBin); // 0.0 to 1.0
 
@@ -603,7 +607,7 @@ function createInteractiveAsteroids(neos) {
             // Tooltip visibile con opacità per non sovrapporsi in modo sporco
             tooltip.className = 'absolute bottom-full mb-1 left-1/2 -translate-x-1/2 opacity-0 group-hover/bar:opacity-100 transition-opacity flex items-center justify-center bg-surface border border-outline-variant/40 text-[9px] font-[\'Inter\'] px-2 py-1 text-white whitespace-nowrap z-50 pointer-events-none rounded shadow-none';
 
-            tooltip.innerHTML = `<span class="opacity-50 mr-1 pb-0.5">${labelRange} km/s:</span><span class="font-bold text-[11px]">${count} AST.</span>`;
+            tooltip.innerHTML = `<span class="font-bold text-[11px]">${count} AST.</span>`;
             bar.appendChild(tooltip);
 
             chartContainer.appendChild(bar);
