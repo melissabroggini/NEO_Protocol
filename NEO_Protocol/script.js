@@ -681,9 +681,9 @@ function focusOnAsteroid(ast) {
     const d = ast.userData;
     document.getElementById('neo-name').innerText = d.name;
     document.getElementById('neo-size').innerText = d.diameter;
-    document.getElementById('neo-speed').innerText = d.speed + " km/s";
-    document.getElementById('neo-distance').innerText = d.km;
-    document.getElementById('neo-lunar').innerText = "(" + d.k_km + " K KM)";
+    document.getElementById('neo-speed').innerText = d.speed + " KM/S";
+    document.getElementById('neo-distance').innerText = d.km + " KM";
+
     document.getElementById('neo-date').innerText = d.date;
 
     const b = document.getElementById('neo-hazard-badge');
