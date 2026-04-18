@@ -37,6 +37,7 @@ const NASA_API_KEY = 'QgMgvoTOhWkOdGyMmM6ksu79G6yrTR6P6jgg36FU';
 // Variabili DOM
 let loadingScreen, loadingText, infoPanel, closeBtn, resetBtn, prevAstBtn, nextAstBtn;
 let timelineContainer, timeSlider, timeCurrentLabel, timeStartLabel, timeEndLabel, playPauseBtn;
+let radarCanvas, radarCtx;
 
 init();
 
@@ -58,6 +59,11 @@ function init() {
     setInterval(() => {
         document.getElementById('local-time').innerText = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23', timeZone: 'Europe/Zurich', timeZoneName: 'short' });
     }, 1000);
+
+    radarCanvas = document.getElementById('radar3d-canvas');
+    if (radarCanvas) {
+        radarCtx = radarCanvas.getContext('2d');
+    }
 
     const container = document.getElementById('canvas-container');
     scene = new THREE.Scene();
@@ -833,6 +839,8 @@ function animate(time) {
     controls.update();
     composer.render();
 
+    draw3DRadar();
+
     // Update Radar UI
     const RADAR_RANGE = 4000; // max visual radius corresponding to radar edge
     realAsteroids.forEach(ast => {
@@ -876,3 +884,167 @@ function focusPrevAsteroid() {
     idx = (idx - 1 + realAsteroids.length) % realAsteroids.length;
     focusOnAsteroid(realAsteroids[idx]);
 }
+
+function draw3DRadar() {
+    if (!radarCanvas || !radarCtx) return;
+
+    // Support dynamic resizing
+    const w = radarCanvas.clientWidth;
+    const h = radarCanvas.clientHeight;
+    if (w === 0 || h === 0) return;
+    if (radarCanvas.width !== w || radarCanvas.height !== h) {
+        radarCanvas.width = w;
+        radarCanvas.height = h;
+    }
+
+    const ctx = radarCtx;
+    ctx.clearRect(0, 0, w, h);
+
+    const centerX = w / 2;
+    const centerY = h * 0.6; // Center is slightly below middle to leave room for height stalks
+
+    // Radar configuration
+    const radarRadiusLines = 4;
+    const radarMaxRange = 3000; // max visual radius (a bit tighter than the old minimap for better vertical visibility)
+    const scale = (w * 0.45) / radarMaxRange; // scale factor mapping world units to canvas pixels
+    const perspectiveY = 0.4; // 0.4 y-scale to squash the circle into an ellipse
+
+    // Draw the radar grid (ellipse)
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
+    ctx.lineWidth = 1;
+
+    for (let i = 1; i <= radarRadiusLines; i++) {
+        const r = (radarMaxRange / radarRadiusLines) * i * scale;
+        ctx.beginPath();
+        ctx.ellipse(centerX, centerY, r, r * perspectiveY, 0, 0, 2 * Math.PI);
+        ctx.stroke();
+    }
+
+    // Crosshairs
+    ctx.beginPath();
+    ctx.moveTo(centerX - (radarMaxRange * scale), centerY);
+    ctx.lineTo(centerX + (radarMaxRange * scale), centerY);
+    ctx.moveTo(centerX, centerY - (radarMaxRange * scale * perspectiveY));
+    ctx.lineTo(centerX, centerY + (radarMaxRange * scale * perspectiveY));
+    ctx.stroke();
+
+    // The center reference point (Camera Target or Earth)
+    let centerPos = new THREE.Vector3(0, 0, 0);
+    if (trackedAsteroid) {
+        centerPos = trackedAsteroid.position.clone();
+    }
+
+    // Getting camera basis vectors for rotation (Flattened onto XZ plane for "forward" orientation)
+    const camDir = new THREE.Vector3();
+    camera.getWorldDirection(camDir);
+    camDir.y = 0;
+    
+    if (camDir.lengthSq() < 0.001) { 
+        camDir.set(0, 0, -1); 
+    } else {
+        camDir.normalize();
+    }
+    const camRight = new THREE.Vector3(-camDir.z, 0, camDir.x); // Perpendicular to forward
+
+    // Draw center indicator representing your ship
+    ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY - 6);
+    ctx.lineTo(centerX - 5, centerY + 5);
+    ctx.lineTo(centerX + 5, centerY + 5);
+    ctx.closePath();
+    ctx.stroke();
+
+    // Iterate objects
+    const drawBlip = (worldPos, isHazardous, fakeTypeStr) => {
+        const relPos = new THREE.Vector3().subVectors(worldPos, centerPos);
+        
+        // Project onto radar plane:
+        const forward = relPos.dot(camDir);
+        const right = relPos.dot(camRight);
+        const up = relPos.y; 
+
+        if (new THREE.Vector2(right, forward).length() > radarMaxRange) return; // Out of range
+
+        // Canvas X is right mapping logic
+        const screenX = centerX + (right * scale);
+        // Canvas Y is down, 'forward' is looking to the distance, so it maps to -Y up the canvas
+        // With an isometric projection the further away in front, the higher on the screen it is
+        const radarPlaneY = centerY - (forward * scale * perspectiveY);
+        
+        // The display elevation Y is simple addition because elevation is standard Y
+        const displayY = radarPlaneY - (up * scale * 1.5); // Multiplier helps exaggeration
+
+        const isAbove = (up >= 0);
+
+        // Colors
+        let objColor = isHazardous ? "#FF2A2A" : "#10E560"; 
+        let altColor = "rgba(255, 255, 255, 0.3)"; // Stalk color
+        let isHollow = !isHazardous && fakeTypeStr !== 'moon'; // AI filled, Player hollow. We use hazardous as "filled" just to differentiate
+
+        if (fakeTypeStr === 'moon' || fakeTypeStr === 'earth') objColor = "#FFFFFF";
+
+        // Draw stalk
+        ctx.strokeStyle = altColor;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(screenX, radarPlaneY);
+        ctx.lineTo(screenX, displayY);
+        ctx.stroke();
+
+        // Draw connection point on radar plane (a tiny dot)
+        ctx.fillStyle = altColor;
+        ctx.beginPath();
+        ctx.ellipse(screenX, radarPlaneY, 1.5, 1.5 * perspectiveY, 0, 0, 2 * Math.PI);
+        ctx.fill();
+
+        // Draw Object
+        ctx.fillStyle = objColor;
+        ctx.strokeStyle = objColor;
+        ctx.lineWidth = 1;
+
+        ctx.beginPath();
+        if (fakeTypeStr === 'rect') {
+            ctx.rect(screenX - 3, displayY - 3, 6, 6);
+        } else if (fakeTypeStr === 'moon' || fakeTypeStr === 'earth') {
+            ctx.arc(screenX, displayY, 4, 0, 2 * Math.PI);
+        } else {
+            // triangle
+            if (isAbove) {
+                ctx.moveTo(screenX, displayY - 4);
+                ctx.lineTo(screenX - 4, displayY + 3);
+                ctx.lineTo(screenX + 4, displayY + 3);
+            } else {
+                ctx.moveTo(screenX, displayY + 4);
+                ctx.lineTo(screenX - 4, displayY - 3);
+                ctx.lineTo(screenX + 4, displayY - 3);
+            }
+        }
+        ctx.closePath();
+        
+        if (!isHollow) {
+            ctx.fill();
+        } else {
+            ctx.stroke();
+            // Fill with background color to appear hollow, hiding the stalk beneath it
+            ctx.fillStyle = "rgba(19, 19, 19, 1)";
+            ctx.fill();
+        }
+    };
+
+    if (moon) drawBlip(moon.position, false, 'moon');
+    if (!trackedAsteroid && earth) {
+        // Earth is center, do nothing
+    } else if (earth) {
+        drawBlip(earth.position, false, 'earth');
+    }
+
+    realAsteroids.forEach((ast) => {
+        // Just map shape on speed arbitrarily
+        const speed = parseFloat(ast.userData.speed || "0");
+        const shapeStr = speed > 15 ? 'triangle' : 'rect';
+        drawBlip(ast.position, ast.userData.isHazardous, shapeStr);
+    });
+}
