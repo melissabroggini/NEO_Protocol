@@ -189,17 +189,19 @@
                 <div class="flex items-center justify-between border-b border-outline-variant/20 pb-2">
                     <h2
                         class="font-['Space_Grotesk'] font-semibold text-sm tracking-[1.17px] text-primary uppercase flex items-center gap-3">
-                        Tactical Radar
+                        3D Isometric Radar
                     </h2>
                     <div class="flex flex-col items-end gap-1">
                         <div class="flex items-center gap-2">
                             <span class="text-[9px] text-outline uppercase tracking-widest font-['Inter']">RANGE</span>
                             <input type="range" id="radar-range" min="500" max="15000" value="3000" class="w-16">
                         </div>
-                        <span id="radar-range-display" class="text-[8px] text-primary/60 font-mono tracking-wider">1'153'200'000 KM</span>
+                        <span id="radar-range-display"
+                            class="text-[8px] text-primary/60 font-mono tracking-wider">1'153'200'000 KM</span>
                     </div>
                 </div>
-                <div class="w-full h-[200px] flex relative rounded-xl overflow-hidden mt-1 bg-gradient-to-b from-[#131313]/80 to-[#131313]/30">
+                <div
+                    class="w-full h-[200px] flex relative rounded-xl overflow-hidden mt-1 bg-gradient-to-b from-[#131313]/80 to-[#131313]/30">
                     <canvas id="radar3d-canvas" class="w-full h-full relative z-0"></canvas>
                 </div>
             </div>
@@ -264,8 +266,9 @@
             <div class="w-[200px]"></div>
 
             <!-- Timeline wrapper (holographic container) -->
-            <div id="timeline-container" class="flex-1 max-w-[600px] relative opacity-0 transition-opacity duration-500 flex flex-col items-center">
-                
+            <div id="timeline-container"
+                class="flex-1 max-w-[600px] relative opacity-0 transition-opacity duration-500 flex flex-col items-center">
+
                 <!-- Camera Controls -->
                 <div class="absolute -top-16 left-1/2 -translate-x-1/2 flex items-center gap-4 w-max z-10">
                     <button id="prev-ast-btn"
@@ -285,19 +288,25 @@
                 </div>
 
                 <!-- Timeline Panel -->
-                <div class="w-full holographic-panel bg-surface/40 backdrop-blur-md p-3 flex flex-col items-center rounded-2xl border border-primary/20 shadow-[0_0_15px_rgba(255,255,255,0.08)] relative z-0">
-                    <div class="flex justify-between w-full text-[9px] text-outline font-['Inter'] mb-2 uppercase tracking-widest">
+                <div
+                    class="w-full holographic-panel bg-surface/40 backdrop-blur-md p-3 flex flex-col items-center rounded-2xl border border-primary/20 shadow-[0_0_15px_rgba(255,255,255,0.08)] relative z-0">
+                    <div
+                        class="flex justify-between w-full text-[9px] text-outline font-['Inter'] mb-2 uppercase tracking-widest">
                         <span id="time-start">--</span>
                         <span id="time-current" class="text-primary font-bold text-xs ">CALCULATING EPHEMERIS...</span>
                         <span id="time-end">--</span>
                     </div>
                     <div class="flex items-center w-full gap-4">
-                        <button id="play-pause-btn" class="text-primary hover:text-white transition-colors material-symbols-outlined shrink-0 drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">pause</button>
-                        <input type="range" id="time-slider" min="0" max="1000" value="500" class="w-full cursor-pointer">
+                        <button id="play-pause-btn"
+                            class="text-primary hover:text-white transition-colors material-symbols-outlined shrink-0 drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">pause</button>
+                        <input type="range" id="time-slider" min="0" max="1000" value="500"
+                            class="w-full cursor-pointer">
                         <div class="flex gap-3 ml-2 shrink-0 font-['Inter'] text-[13px] font-bold">
-                            <button class="speed-btn text-primary/40 hover:text-primary transition-colors" data-speed="1000">1X</button>
+                            <button class="speed-btn text-primary/40 hover:text-primary transition-colors"
+                                data-speed="1000">1X</button>
                             <button class="speed-btn text-primary  transition-colors" data-speed="10000">10X</button>
-                            <button class="speed-btn text-primary/40 hover:text-primary transition-colors" data-speed="100000">100X</button>
+                            <button class="speed-btn text-primary/40 hover:text-primary transition-colors"
+                                data-speed="100000">100X</button>
                         </div>
                     </div>
                 </div>
