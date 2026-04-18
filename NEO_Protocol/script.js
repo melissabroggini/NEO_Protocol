@@ -499,6 +499,10 @@ function createInteractiveAsteroids(neos) {
         const n_rad_hr = n_rad_s * 3600;
 
         const points = [];
+        const colors = [];
+        const baseColor = new THREE.Color(colorHex);
+        const blackColor = new THREE.Color(0x000000);
+        
         let hLimit = 0.5;
         while (hLimit < 25.0) {
             let rTest = Math.abs(a_visual * (1 - e * Math.cosh(hLimit)));
@@ -510,11 +514,21 @@ function createInteractiveAsteroids(neos) {
             let theta = 2 * Math.atan(Math.sqrt((e + 1) / (e - 1)) * Math.tanh(i / 2));
             let r = a_visual * (1 - e * Math.cosh(i));
             points.push(periapsisDir.clone().multiplyScalar(r * Math.cos(theta)).add(semiMinorDir.clone().multiplyScalar(r * Math.sin(theta))));
+            
+            // Fade out smoothly towards the ends
+            let fraction = Math.abs(i) / hLimit; 
+            let fadeFactor = 1.0 - Math.pow(fraction, 2.0); 
+            let mixedColor = baseColor.clone().lerp(blackColor, 1.0 - fadeFactor);
+            colors.push(mixedColor.r, mixedColor.g, mixedColor.b);
         }
+        
+        const trajGeo = new THREE.BufferGeometry().setFromPoints(points);
+        trajGeo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
         const trajMat = new THREE.LineBasicMaterial({
-            color: colorHex, transparent: true, opacity: isHazardous ? 0.4 : 0.2, blending: THREE.AdditiveBlending
+            vertexColors: true, color: 0xffffff, transparent: true, opacity: isHazardous ? 0.4 : 0.2, blending: THREE.AdditiveBlending
         });
-        const traj = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), trajMat);
+        const traj = new THREE.Line(trajGeo, trajMat);
         scene.add(traj);
 
         const k_km = d_km / 1000;
