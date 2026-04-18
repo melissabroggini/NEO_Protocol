@@ -583,12 +583,14 @@ function focusOnAsteroid(ast) {
     b.innerText = d.isHazardous ? "PHA THREAT" : "SAFE";
     b.className = `inline-block text-2xl text-center font-bold uppercase tracking-widest ${d.isHazardous ? 'text-[#FF0000] [text-shadow:0_0_8px_rgba(255,0,0,0.8)]' : 'text-[#00FF00] [text-shadow:0_0_8px_rgba(0,255,0,0.8)]'}`;
 
+    const infoTitle = document.getElementById('info-panel-title');
+    if (infoTitle) infoTitle.innerText = "Target Locked";
+
     document.getElementById('target-placeholder').classList.add('hidden');
     document.getElementById('target-details').classList.remove('hidden');
     document.getElementById('target-details').classList.add('flex');
 
-    infoPanel.classList.remove('opacity-30', 'opacity-40');
-    infoPanel.classList.add('opacity-100');
+
     if (closeBtn) closeBtn.classList.remove('hidden');
 
     if (currentTween) currentTween.stop();
@@ -643,8 +645,10 @@ function closePanel() {
     document.getElementById('target-placeholder').classList.remove('hidden');
     document.getElementById('target-details').classList.add('hidden');
     document.getElementById('target-details').classList.remove('flex');
-    infoPanel.classList.add('opacity-40');
-    infoPanel.classList.remove('opacity-100');
+
+    const infoTitle = document.getElementById('info-panel-title');
+    if (infoTitle) infoTitle.innerText = "Select Target";
+
     if (closeBtn) closeBtn.classList.add('hidden');
 }
 
