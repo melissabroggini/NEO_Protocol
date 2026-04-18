@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="it" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEO Protocol</title>
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+
+
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#ffffff",
+                        "surface": "#131313",
+                        "on-surface": "#e2e2e2",
+                        "on-primary": "#191b22",
+                        "outline-variant": "#474747",
+                        "outline": "#919191",
+                        "surface-variant": "#353535"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+    <!-- Three.js + Postprocessing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body
+    class="font-['Space_Grotesk'] antialiased h-screen w-screen overflow-hidden selection:bg-primary selection:text-surface">
+    <!-- Three.js Canvas Container -->
+    <div id="canvas-container"></div>
+    <div class="scanlines"></div>
+
+    <!-- Loading Screen (Overlay) -->
+    <div id="loading-screen"
+        class="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-surface transition-opacity duration-1000 pointer-events-auto">
+        <div class="loader mb-6"></div>
+        <h2 class="font-['Space_Grotesk'] font-bold text-2xl tracking-[1.17px] text-primary  uppercase">INITIALIZING
+            PROTOCOL</h2>
+        <p id="loading-text"
+            class="text-outline mt-4 text-center font-['Inter'] text-sm tracking-widest uppercase animate-pulse-cyan">
+            SYNCING JPL...</p>
+    </div>
+
+    <!-- Main HUD Elements -->
+    <main class="relative w-full h-full flex items-center justify-between p-12 z-10 pointer-events-none">
+
+        <!-- Header -->
+        <header class="absolute top-8 left-0 flex flex-col items-center gap-1 z-30 w-full px-12 pointer-events-auto">
+            <div class="flex items-center justify-between w-full border-b border-outline-variant/20 pb-4">
+                <div class="flex items-center gap-4">
+
+                    <h1 class="font-['Space_Grotesk'] font-bold text-2xl tracking-[1.17px] text-primary  uppercase">
+                        NEO Protocol</h1>
+                </div>
+                <!-- Status metrics -->
+                <div
+                    class="flex gap-10 font-['Inter'] text-[11px] text-primary/60 tracking-widest uppercase items-center">
+                    <div class="flex flex-col items-end">
+                        <span class="opacity-50">LOCAL TIME</span>
+                        <span id="local-time" class="text-primary ">--:--:-- GMT</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Left Screen: Global Stats & Sensors -->
+        <aside class="w-[340px] h-[calc(100vh-160px)] mt-16 z-20 flex flex-col gap-4 pointer-events-auto">
+            <div
+                class="holographic-panel p-4 flex flex-col justify-center bg-surface/40 backdrop-blur-md rounded-2xl border border-primary/20">
+                <div class="font-['Inter'] text-[10px] text-outline leading-relaxed uppercase">
+                    &gt; DRAG TO ROTATE<br />
+                    &gt; SCROLL TO ZOOM<br />
+                    &gt; CLICK ON AN ASTEROID TO VIEW DETAILS<br />
+                    &gt; USE BOTTOM SLIDER TO TIME TRAVEL
+                </div>
+            </div>
+
+            <div
+                class="holographic-panel p-4 flex flex-col gap-6 bg-surface/40 backdrop-blur-md rounded-2xl border border-primary/20">
+                <div class="flex items-center justify-between border-b border-outline-variant/20 pb-2">
+                    <h2
+                        class="font-['Space_Grotesk'] font-semibold text-sm tracking-[1.17px] text-primary uppercase flex items-center gap-3">
+
+                        Global Stats
+                    </h2>
+                    <span class="font-['Inter'] text-[9px] text-primary/30">OPT: 01A</span>
+                </div>
+                <div class="flex flex-col gap-5 font-['Inter']">
+                    <div class="flex justify-between items-end border-b border-primary/5 pb-1">
+                        <span class="text-[11px] text-outline uppercase">Total Tracked</span>
+                        <span id="stat-total" class="text-xl text-primary  font-bold">--</span>
+                    </div>
+                    <div class="flex justify-between items-end border-b border-primary/5 pb-1">
+                        <span class="text-[11px] text-outline uppercase">Nearest Appr.</span>
+                        <span id="stat-nearest" class="text-xl text-primary  font-bold">--K <span
+                                class="text-[10px] opacity-50">KM</span></span>
+                    </div>
+                    <div class="flex justify-between items-end border-b border-primary/5 pb-1">
+                        <span class="text-[11px] text-outline uppercase">Max Velocity</span>
+                        <span id="stat-speed" class="text-xl text-primary  font-bold">-- <span
+                                class="text-[10px] opacity-50">KM/S</span></span>
+                    </div>
+                    <div class="flex justify-between items-end pb-1">
+                        <span class="text-[11px] text-outline uppercase">Active Threats</span>
+                        <span id="stat-threats" class="text-xl text-primary  font-bold">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="holographic-panel p-4 flex flex-col gap-6 bg-surface/40 backdrop-blur-md rounded-2xl border border-primary/20">
+                <div class="flex items-center justify-between border-b border-outline-variant/20 pb-2">
+                    <h2
+                        class="font-['Space_Grotesk'] font-semibold text-sm tracking-[1.17px] text-primary uppercase flex items-center gap-3">
+
+                        VELOCITY (KM/S)
+                    </h2>
+                </div>
+                <div class="w-full h-40 flex flex-col mt-2">
+                    <div class="flex-1 flex">
+                        <!-- Y-Axis (Quantity) -->
+                        <div id="chart-y-axis"
+                            class="w-6 flex flex-col justify-between text-[8px] font-['Inter'] text-outline text-right pr-2 h-full pb-0.5 relative">
+                            <span id="chart-max-y">MAX</span>
+                            <span>0</span>
+                        </div>
+                        <!-- Chart Bars Container -->
+                        <div id="env-chart-container"
+                            class="flex-1 border-l border-b border-primary/40 relative grid grid-cols-7 gap-1 px-1 pt-4 group/chart radar-grid items-end">
+                            <div class="text-primary/30 text-[10px] w-full text-center my-auto col-span-7">CALCULATING
+                                DISTRIBUTIONS...</div>
+                        </div>
+                    </div>
+                    <!-- X-Axis (Velocity) -->
+                    <div class="w-full flex pl-6">
+                        <div id="chart-x-axis"
+                            class="flex-1 flex justify-between text-[8px] font-['Inter'] text-outline pt-1 px-1">
+                            <span>0</span>
+                            <span>15</span>
+                            <span>30+</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Screen: Radar & Target Info -->
+        <aside class="w-[340px] h-[calc(100vh-160px)] mt-16 z-20 flex flex-col gap-4 pointer-events-auto">
+
+            <div id="info-panel"
+                class="holographic-panel p-4 flex flex-col gap-4 overflow-hidden bg-surface/40 backdrop-blur-md transition-opacity duration-500 opacity-30 rounded-2xl border border-primary/20">
+                <div class="flex items-center justify-between border-b border-outline-variant/20 pb-2">
+                    <h2
+                        class="font-['Space_Grotesk'] font-semibold text-sm tracking-[1.17px] text-primary uppercase flex items-center gap-3">
+
+                        Target Lock
+                    </h2>
+                </div>
+
+                <div class="font-['Inter'] text-[11px] leading-loose flex flex-col gap-2 overflow-y-auto w-full">
+                    <div id="target-placeholder" class="text-primary/40 mt-4 text-center">NO TARGET SELECTED</div>
+
+                    <div id="target-details" class="hidden flex-col gap-4">
+                        <div id="neo-hazard-badge"
+                            class="inline-block px-2 py-1 rounded-xl text-center font-bold uppercase tracking-widest text-surface bg-primary">
+                            SAFE
+                        </div>
+
+                        <div class="border-b border-outline-variant/20 pb-3">
+                            <h3 class="text-xs text-outline uppercase tracking-widest">Designation</h3>
+                            <p id="neo-name" class="text-lg text-primary  font-bold mt-1 tracking-wider">--</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <h3 class="text-[9px] text-outline uppercase tracking-widest">Est. Diameter</h3>
+                                <p id="neo-size" class="text-sm text-primary mt-1">-- m</p>
+                            </div>
+                            <div>
+                                <h3 class="text-[9px] text-outline uppercase tracking-widest">Rel. Velocity</h3>
+                                <p id="neo-speed" class="text-sm text-primary mt-1">-- km/s</p>
+                            </div>
+                            <div class="col-span-2">
+                                <h3 class="text-[9px] text-outline uppercase tracking-widest">Min. Distance</h3>
+                                <div class="flex items-baseline gap-2 mt-1">
+                                    <p id="neo-distance" class="text-sm text-primary">-- km</p>
+                                    <p id="neo-lunar" class="text-[10px] text-primary/60">(-- K KM)</p>
+                                </div>
+                            </div>
+                            <div class="col-span-2">
+                                <h3 class="text-[9px] text-outline uppercase tracking-widest">Close Approach</h3>
+                                <p id="neo-date" class="text-sm text-primary mt-1">--</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+
+
+
+
+        <!-- Footer / Timeline Container -->
+        <footer
+            class="absolute bottom-8 left-1/2 -translate-x-1/2 w-full max-w-[1300px] flex justify-between items-center px-12 z-30 font-['Inter'] text-[10px] tracking-[1.17px] pointer-events-auto">
+            <div class="w-[200px]"></div>
+
+            <!-- Timeline wrapper (holographic container) -->
+            <div id="timeline-container"
+                class="flex-1 max-w-[600px] holographic-panel bg-surface/40 backdrop-blur-md p-3 flex flex-col items-center opacity-0 transition-opacity duration-500 rounded-2xl border border-primary/20 relative">
+
+                <!-- Camera Controls -->
+                <div class="absolute -top-16 left-1/2 -translate-x-1/2 flex items-center gap-4">
+                    <button id="prev-ast-btn"
+                        class="w-[160px] py-3 holographic-panel bg-surface/80 backdrop-blur-md border border-primary/20 rounded-2xl text-white font-['Inter'] text-[0.75rem] font-semibold tracking-[1.17px] uppercase hover:bg-primary/20 hover:text-white transition-all duration-300 cursor-pointer shadow-none">
+                        &lt; Prev Target
+                    </button>
+                    <button id="reset-cam-btn"
+                        class="w-[240px] py-3 holographic-panel bg-surface/80 backdrop-blur-md border border-primary/20 rounded-2xl text-white font-['Inter'] text-[0.75rem] font-semibold tracking-[1.17px] uppercase hover:bg-primary/20 hover:text-white transition-all duration-300 cursor-pointer shadow-none">
+                        Reset Camera
+                    </button>
+                    <button id="next-ast-btn"
+                        class="w-[160px] py-3 holographic-panel bg-surface/80 backdrop-blur-md border border-primary/20 rounded-2xl text-white font-['Inter'] text-[0.75rem] font-semibold tracking-[1.17px] uppercase hover:bg-primary/20 hover:text-white transition-all duration-300 cursor-pointer shadow-none">
+                        Next Target &gt;
+                    </button>
+                </div>
+                <div
+                    class="flex justify-between w-full text-[9px] text-outline font-['Inter'] mb-2 uppercase tracking-widest">
+                    <span id="time-start">--</span>
+                    <span id="time-current" class="text-primary font-bold text-xs ">CALCULATING
+                        EPHEMERIS...</span>
+                    <span id="time-end">--</span>
+                </div>
+                <div class="flex items-center w-full gap-4">
+                    <button id="play-pause-btn"
+                        class="text-primary hover:text-white hover:bg-primary/30 bg-primary/10 text-lg w-8 h-8 flex items-center justify-center transition-colors material-symbols-outlined rounded-full shrink-0">pause</button>
+                    <input type="range" id="time-slider" min="0" max="1000" value="500" class="w-full cursor-pointer">
+                    <div class="flex gap-3 ml-2 shrink-0 font-['Inter'] text-[13px] font-bold">
+                        <button class="speed-btn text-primary/40 hover:text-primary transition-colors"
+                            data-speed="1000">1X</button>
+                        <button class="speed-btn text-primary  transition-colors" data-speed="10000">10X</button>
+                        <button class="speed-btn text-primary/40 hover:text-primary transition-colors"
+                            data-speed="100000">100X</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-[200px]"></div>
+        </footer>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
