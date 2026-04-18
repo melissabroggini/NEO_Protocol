@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEO Protocol - Routing...</title>
+    <style>
+        body {
+            background-color: #131313;
+            color: #ffffff;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+    </style>
+    <script>
+        // Router Logic: 
+        // If the user has already visited and clicked the initialize button, send to app
+        // Otherwise, send to landing
+        window.onload = function() {
+            if (localStorage.getItem('hasVisited') === 'true') {
+                window.location.replace('app.html');
+            } else {
+                window.location.replace('landing.html');
+            }
+        };
+    </script>
+</head>
+<body>
+    <p>Initializing Sequence...</p>
+</body>
+</html>
