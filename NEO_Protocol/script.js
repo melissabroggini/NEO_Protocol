@@ -538,7 +538,7 @@ function createInteractiveAsteroids(neos) {
             speed: speedKps.toFixed(2), km: formatSwiss(d_km), k_km: formatSwiss(k_km),
             date: new Date(parseInt(approach.epoch_date_close_approach)).toLocaleString('it-IT', { timeZone: 'Europe/Zurich', timeZoneName: 'short' }).replace(/\//g, '.'),
             approachTimestamp: parseInt(approach.epoch_date_close_approach),
-            periapsisDir, semiMinorDir, e, a: a_visual, n: n_rad_hr, traj
+            periapsisDir, semiMinorDir, e, a: a_visual, n: n_rad_hr, traj, visualRadius
         };
 
         updateAsteroidPosition(astMesh, currentSimTime);
@@ -726,7 +726,10 @@ function focusOnAsteroid(ast) {
     if (dir.lengthSq() < 0.1) dir.set(0, 0, 1);
 
     const startOffset = camStartPos.clone().sub(targetStartPos);
-    const idealOffset = dir.clone().multiplyScalar(15);
+    
+    // Dynamic zoom distance based on asteroid's visual radius so it always fits in the FOV
+    const targetDist = Math.max(15, (d.visualRadius || 1) * 5 + 5);
+    const idealOffset = dir.clone().multiplyScalar(targetDist);
 
     isZooming = true;
     controls.enabled = false;
