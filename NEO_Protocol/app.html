@@ -184,6 +184,21 @@
         <!-- Right Screen: Radar & Target Info -->
         <aside class="w-[340px] h-[calc(100vh-160px)] mt-16 z-20 flex flex-col gap-4 pointer-events-auto">
 
+            <div id="radar-panel"
+                class="holographic-panel p-4 flex flex-col gap-2 bg-surface/40 backdrop-blur-md rounded-2xl border border-primary/20">
+                <div class="flex items-center justify-between border-b border-outline-variant/20 pb-2">
+                    <h2
+                        class="font-['Space_Grotesk'] font-semibold text-sm tracking-[1.17px] text-primary uppercase flex items-center gap-3">
+                        Tactical Radar
+                    </h2>
+                </div>
+                <div class="w-full h-[200px] flex relative rounded-xl overflow-hidden mt-1 bg-gradient-to-b from-[#131313]/80 to-[#131313]/30">
+                    <!-- Scanner sweep gradient overlay -->
+                    <div class="absolute inset-0 pointer-events-none rounded-xl" style="background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.6) 100%); z-index: 1;"></div>
+                    <canvas id="radar3d-canvas" class="w-full h-full relative z-0"></canvas>
+                </div>
+            </div>
+
             <div id="info-panel"
                 class="holographic-panel p-4 flex flex-col gap-4 overflow-hidden bg-surface/40 backdrop-blur-md rounded-2xl border border-primary/20">
                 <div class="flex items-center justify-between border-b border-outline-variant/20 pb-2">
