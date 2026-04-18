@@ -1,4 +1,4 @@
-# Media-Interactions
+# Media-Interaction
 
 NASA Neo-Sentinel: 70 Years of Planetary Defense
 
