@@ -204,7 +204,7 @@
                         </div>
 
                         <div class="border-b border-outline-variant/20 pb-3">
-                            <h3 class="text-xs text-outline uppercase tracking-widest">Name</h3>
+                            <h3 class="text-xs text-outline uppercase tracking-widest">Asteroid name</h3>
                             <p id="neo-name" class="text-lg text-primary  font-bold mt-1 tracking-wider">--</p>
                         </div>
 
@@ -245,22 +245,25 @@
 
             <!-- Timeline wrapper (holographic container) -->
             <div id="timeline-container"
-                class="flex-1 max-w-[600px] holographic-panel bg-surface/40 backdrop-blur-md p-3 flex flex-col items-center opacity-0 transition-opacity duration-500 rounded-2xl border border-primary/20 relative">
+                class="flex-1 max-w-[600px] holographic-panel bg-surface/40 backdrop-blur-md p-3 flex flex-col items-center opacity-0 transition-opacity duration-500 rounded-2xl border border-primary/20 relative shadow-[0_0_15px_rgba(255,255,255,0.08)]">
 
                 <!-- Camera Controls -->
                 <div class="absolute -top-16 left-1/2 -translate-x-1/2 flex items-center gap-4">
                     <button id="prev-ast-btn"
-                        class="w-[160px] py-3 holographic-panel bg-surface/80 backdrop-blur-md border border-primary/20 rounded-2xl text-white font-['Inter'] text-[0.75rem] font-semibold tracking-[1.17px] uppercase hover:bg-primary/20 hover:text-white transition-all duration-300 cursor-pointer shadow-none">
+                        class="w-[160px] py-3 holographic-panel bg-surface/80 backdrop-blur-md border border-primary/20 rounded-2xl text-white font-['Inter'] text-[0.75rem] font-semibold tracking-[1.17px] uppercase hover:bg-primary/20 hover:text-white transition-all duration-300 cursor-pointer shadow-[0_0_15px_rgba(255,255,255,0.08)]">
                         Prev Target
                     </button>
+
                     <button id="reset-cam-btn"
-                        class="w-[240px] py-3 holographic-panel bg-surface/80 backdrop-blur-md border border-primary/20 rounded-2xl text-white font-['Inter'] text-[0.75rem] font-semibold tracking-[1.17px] uppercase hover:bg-primary/20 hover:text-white transition-all duration-300 cursor-pointer shadow-none">
+                        class="w-[240px] py-3 holographic-panel bg-surface/80 backdrop-blur-md border border-primary/20 rounded-2xl text-white font-['Inter'] text-[0.75rem] font-semibold tracking-[1.17px] uppercase hover:bg-primary/20 hover:text-white transition-all duration-300 cursor-pointer shadow-[0_0_15px_rgba(255,255,255,0.08)]">
                         Get back to earth
                     </button>
+
                     <button id="next-ast-btn"
-                        class="w-[160px] py-3 holographic-panel bg-surface/80 backdrop-blur-md border border-primary/20 rounded-2xl text-white font-['Inter'] text-[0.75rem] font-semibold tracking-[1.17px] uppercase hover:bg-primary/20 hover:text-white transition-all duration-300 cursor-pointer shadow-none">
+                        class="w-[160px] py-3 holographic-panel bg-surface/80 backdrop-blur-md border border-primary/20 rounded-2xl text-white font-['Inter'] text-[0.75rem] font-semibold tracking-[1.17px] uppercase hover:bg-primary/20 hover:text-white transition-all duration-300 cursor-pointer shadow-[0_0_15px_rgba(255,255,255,0.08)]">
                         Next Target
                     </button>
+
                 </div>
                 <div
                     class="flex justify-between w-full text-[9px] text-outline font-['Inter'] mb-2 uppercase tracking-widest">
@@ -271,7 +274,7 @@
                 </div>
                 <div class="flex items-center w-full gap-4">
                     <button id="play-pause-btn"
-                        class="text-primary hover:text-white hover:bg-primary/30 bg-primary/10 text-lg w-8 h-8 flex items-center justify-center transition-colors material-symbols-outlined rounded-full shrink-0">pause</button>
+                        class="text-primary hover:text-white transition-colors material-symbols-outlined shrink-0 drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">pause</button>
                     <input type="range" id="time-slider" min="0" max="1000" value="500" class="w-full cursor-pointer">
                     <div class="flex gap-3 ml-2 shrink-0 font-['Inter'] text-[13px] font-bold">
                         <button class="speed-btn text-primary/40 hover:text-primary transition-colors"
