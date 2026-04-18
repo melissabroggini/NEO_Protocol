@@ -191,9 +191,12 @@
                         class="font-['Space_Grotesk'] font-semibold text-sm tracking-[1.17px] text-primary uppercase flex items-center gap-3">
                         Tactical Radar
                     </h2>
-                    <div class="flex items-center gap-2">
-                        <span class="text-[9px] text-outline uppercase tracking-widest font-['Inter']">RANGE</span>
-                        <input type="range" id="radar-range" min="500" max="15000" value="3000" class="w-16">
+                    <div class="flex flex-col items-end gap-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[9px] text-outline uppercase tracking-widest font-['Inter']">RANGE</span>
+                            <input type="range" id="radar-range" min="500" max="15000" value="3000" class="w-16">
+                        </div>
+                        <span id="radar-range-display" class="text-[8px] text-primary/60 font-mono tracking-wider">1'153'200'000 KM</span>
                     </div>
                 </div>
                 <div class="w-full h-[200px] flex relative rounded-xl overflow-hidden mt-1 bg-gradient-to-b from-[#131313]/80 to-[#131313]/30">
