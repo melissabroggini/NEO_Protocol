@@ -87,7 +87,7 @@ function init() {
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
     controls.minDistance = 3.5;
-    controls.maxDistance = 300000;
+    controls.maxDistance = 7000;
 
     // Luce d'ambiente sferica aumentata per riempire le ombre e renderle blu scuro/grigie invece che nere
     const hemiLight = new THREE.HemisphereLight(0x36486b, 0x24344d, 1.5);
@@ -298,24 +298,24 @@ function updateTimelineUI() {
 function createProceduralAsteroidGeometry(baseRadius) {
     // Alzo il livello di dettaglio da 4 a 8: i poligoni passano da circa 500 a oltre 1600!
     // Questo ci dà tutta la geometria necessaria per ricavare rocce spigolose e micro-porosità.
-    const geometry = new THREE.IcosahedronGeometry(baseRadius, 8); 
+    const geometry = new THREE.IcosahedronGeometry(baseRadius, 8);
     const pos = geometry.attributes.position;
     const v = new THREE.Vector3();
-    
+
     // Reintroduciamo uno stretch assi per creare forme allungate o schiacciate,
     // ma usiamo limiti MODERATI per non "stirare" i poligoni in modo sgraziato.
     let sx = 1.0, sy = 1.0, sz = 1.0;
     const baseShape = Math.random();
-    
+
     if (baseShape > 0.6) {
         // Forma allungata (sigaro) - Proporzione max ~2.5x per evitare poligoni troppo stirati
         sx = 1.4 + Math.random() * 0.4; // 1.4 -> 1.8
         sy = 0.7 + Math.random() * 0.2; // 0.7 -> 0.9
-        sz = 0.7 + Math.random() * 0.2; 
+        sz = 0.7 + Math.random() * 0.2;
     } else if (baseShape > 0.3) {
         // Forma schiacciata (focaccia)
         sx = 1.1 + Math.random() * 0.3; // 1.1 -> 1.4
-        sy = 1.1 + Math.random() * 0.3; 
+        sy = 1.1 + Math.random() * 0.3;
         sz = 0.6 + Math.random() * 0.2; // 0.6 -> 0.8
     } else {
         // Forma irregolare "a patata"
@@ -347,7 +347,7 @@ function createProceduralAsteroidGeometry(baseRadius) {
     // Dettagli di superficie (micro-rilievi). Ammorbiditi per evitare l'effetto "scaglioso" o spinoso
     const microF1 = 5.0 + Math.random() * 5.0;
     const microF2 = 5.0 + Math.random() * 5.0;
-    const microAmp = 0.02 + Math.random() * 0.03;  
+    const microAmp = 0.02 + Math.random() * 0.03;
     const superMicroF = 15.0 + Math.random() * 10.0; // Strato aggiuntivo per ruvidezza
     const superMicroAmp = 0.005 + Math.random() * 0.01; // Lievissimo, serve solo a non far brillare la roccia come plastica
 
@@ -360,20 +360,20 @@ function createProceduralAsteroidGeometry(baseRadius) {
     for (let i = 0; i < pos.count; i++) {
         v.fromBufferAttribute(pos, i);
         const dir = v.clone().normalize();
-        
+
         // Creiamo enormi bozzi e cavità simili a Perlin 3D tramite onde sovrapposte
-        let macroNoise = 
-            Math.sin(dir.x * f1A) * macroAmp1 + 
-            Math.cos(dir.y * f2A) * macroAmp1 + 
+        let macroNoise =
+            Math.sin(dir.x * f1A) * macroAmp1 +
+            Math.cos(dir.y * f2A) * macroAmp1 +
             Math.sin(dir.z * f3A) * macroAmp1 +
             Math.sin(dir.x * f1B + dir.y * f2B) * macroAmp2 +
             Math.cos(dir.z * f3B + dir.x * f1B) * macroAmp2;
 
         // Sommiamo sia i micro-dettagli medi che la porosità superficiale ad altissima frequenza ammorbidita
-        let noise = 1.0 + macroNoise 
+        let noise = 1.0 + macroNoise
             + (Math.sin(dir.x * microF1) * Math.cos(dir.z * microF2) * microAmp)
             + (Math.sin(dir.x * superMicroF) * Math.cos(dir.y * superMicroF) * superMicroAmp);
-        
+
         // Evitiamo auto-intersezioni della mesh limitando il restringimento minimo
         if (noise < 0.2) noise = 0.2;
 
@@ -381,14 +381,14 @@ function createProceduralAsteroidGeometry(baseRadius) {
         if (hasCrater) {
             const dot = dir.dot(craterDir);
             if (dot > 1.0 - craterSize) {
-                const t = (dot - (1.0 - craterSize)) / craterSize; 
+                const t = (dot - (1.0 - craterSize)) / craterSize;
                 noise -= Math.sin(t * Math.PI) * craterDepth;
             }
         }
 
-        pos.setXYZ(i, 
-            dir.x * baseRadius * noise * stretchX, 
-            dir.y * baseRadius * noise * stretchY, 
+        pos.setXYZ(i,
+            dir.x * baseRadius * noise * stretchX,
+            dir.y * baseRadius * noise * stretchY,
             dir.z * baseRadius * noise * stretchZ
         );
     }
@@ -439,7 +439,7 @@ function createInteractiveAsteroids(neos) {
 
         // Scala le dimensioni a schermo proporzionalmente in base alla stima massima NASA
         const actualDiameter = neo.estimated_diameter.meters.estimated_diameter_max;
-        
+
         // Moltiplichiamo proporzionalmente permettendo estrema variazione.
         // Cap minimo = 0.15 (non deve sparire)
         // Cap massimo = 12.0 (asteroide abnorme)
