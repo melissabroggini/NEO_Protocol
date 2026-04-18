@@ -288,15 +288,101 @@ function updateTimelineUI() {
 }
 
 function createProceduralAsteroidGeometry(baseRadius) {
-    const geometry = new THREE.IcosahedronGeometry(baseRadius, 3);
+    // Alzo il livello di dettaglio da 4 a 8: i poligoni passano da circa 500 a oltre 1600!
+    // Questo ci dà tutta la geometria necessaria per ricavare rocce spigolose e micro-porosità.
+    const geometry = new THREE.IcosahedronGeometry(baseRadius, 8); 
     const pos = geometry.attributes.position;
     const v = new THREE.Vector3();
-    const stretch = new THREE.Vector3(0.7 + Math.random() * 0.6, 0.7 + Math.random() * 0.6, 0.7 + Math.random() * 0.6);
+    
+    // Reintroduciamo uno stretch assi per creare forme allungate o schiacciate,
+    // ma usiamo limiti MODERATI per non "stirare" i poligoni in modo sgraziato.
+    let sx = 1.0, sy = 1.0, sz = 1.0;
+    const baseShape = Math.random();
+    
+    if (baseShape > 0.6) {
+        // Forma allungata (sigaro) - Proporzione max ~2.5x per evitare poligoni troppo stirati
+        sx = 1.4 + Math.random() * 0.4; // 1.4 -> 1.8
+        sy = 0.7 + Math.random() * 0.2; // 0.7 -> 0.9
+        sz = 0.7 + Math.random() * 0.2; 
+    } else if (baseShape > 0.3) {
+        // Forma schiacciata (focaccia)
+        sx = 1.1 + Math.random() * 0.3; // 1.1 -> 1.4
+        sy = 1.1 + Math.random() * 0.3; 
+        sz = 0.6 + Math.random() * 0.2; // 0.6 -> 0.8
+    } else {
+        // Forma irregolare "a patata"
+        sx = 0.85 + Math.random() * 0.3;
+        sy = 0.85 + Math.random() * 0.3;
+        sz = 0.85 + Math.random() * 0.3;
+    }
+
+    // Mescoliamo gli assi casualmente in modo che le forme allungate non puntino tutte nella stessa direzione
+    const assi = [sx, sy, sz];
+    for (let k = assi.length - 1; k > 0; k--) {
+        const j = Math.floor(Math.random() * (k + 1));
+        [assi[k], assi[j]] = [assi[j], assi[k]];
+    }
+    const stretchX = assi[0], stretchY = assi[1], stretchZ = assi[2];
+
+    // Sommiamo diverse frequenze per distruggere la sfericità di base creando grandi "lobi" e "valli"
+    const f1A = 0.5 + Math.random() * 1.5;
+    const f2A = 0.5 + Math.random() * 1.5;
+    const f3A = 0.5 + Math.random() * 1.5;
+
+    const f1B = 2.0 + Math.random() * 2.0;
+    const f2B = 2.0 + Math.random() * 2.0;
+    const f3B = 2.0 + Math.random() * 2.0;
+
+    const macroAmp1 = 0.15 + Math.random() * 0.25; // Lobi strutturali compatti (allungati o irregolari ma solidi)
+    const macroAmp2 = 0.08 + Math.random() * 0.12; // Dossi e avvallamenti naturali fluidi
+
+    // Dettagli di superficie (micro-rilievi). Ammorbiditi per evitare l'effetto "scaglioso" o spinoso
+    const microF1 = 5.0 + Math.random() * 5.0;
+    const microF2 = 5.0 + Math.random() * 5.0;
+    const microAmp = 0.02 + Math.random() * 0.03;  
+    const superMicroF = 15.0 + Math.random() * 10.0; // Strato aggiuntivo per ruvidezza
+    const superMicroAmp = 0.005 + Math.random() * 0.01; // Lievissimo, serve solo a non far brillare la roccia come plastica
+
+    // Aggiungi probabilità che l'asteroide abbia grossi crateri visibili
+    const hasCrater = Math.random() > 0.2; // Più frequenti per compensare la minore rugosità
+    const craterDir = new THREE.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
+    const craterSize = 0.25 + Math.random() * 0.35; // ampiezza del cratere
+    const craterDepth = 0.1 + Math.random() * 0.2; // profondità più moderata
+
     for (let i = 0; i < pos.count; i++) {
         v.fromBufferAttribute(pos, i);
         const dir = v.clone().normalize();
-        let noise = 1.0 + (Math.sin(dir.x * 3.0) * Math.cos(dir.y * 3.0) * 0.2) + (Math.sin(dir.z * 10.0) * 0.05);
-        pos.setXYZ(i, dir.x * baseRadius * noise * stretch.x, dir.y * baseRadius * noise * stretch.y, dir.z * baseRadius * noise * stretch.z);
+        
+        // Creiamo enormi bozzi e cavità simili a Perlin 3D tramite onde sovrapposte
+        let macroNoise = 
+            Math.sin(dir.x * f1A) * macroAmp1 + 
+            Math.cos(dir.y * f2A) * macroAmp1 + 
+            Math.sin(dir.z * f3A) * macroAmp1 +
+            Math.sin(dir.x * f1B + dir.y * f2B) * macroAmp2 +
+            Math.cos(dir.z * f3B + dir.x * f1B) * macroAmp2;
+
+        // Sommiamo sia i micro-dettagli medi che la porosità superficiale ad altissima frequenza ammorbidita
+        let noise = 1.0 + macroNoise 
+            + (Math.sin(dir.x * microF1) * Math.cos(dir.z * microF2) * microAmp)
+            + (Math.sin(dir.x * superMicroF) * Math.cos(dir.y * superMicroF) * superMicroAmp);
+        
+        // Evitiamo auto-intersezioni della mesh limitando il restringimento minimo
+        if (noise < 0.2) noise = 0.2;
+
+        // Deformazione scavata per simulare crateri da impatto
+        if (hasCrater) {
+            const dot = dir.dot(craterDir);
+            if (dot > 1.0 - craterSize) {
+                const t = (dot - (1.0 - craterSize)) / craterSize; 
+                noise -= Math.sin(t * Math.PI) * craterDepth;
+            }
+        }
+
+        pos.setXYZ(i, 
+            dir.x * baseRadius * noise * stretchX, 
+            dir.y * baseRadius * noise * stretchY, 
+            dir.z * baseRadius * noise * stretchZ
+        );
     }
     geometry.computeVertexNormals();
     return geometry;
@@ -343,7 +429,13 @@ function createInteractiveAsteroids(neos) {
         if (d_lunar < nearestDist) nearestDist = d_lunar;
         if (d_km < nearestKm) nearestKm = d_km;
 
-        const visualRadius = Math.min(3.5, Math.max(0.6, neo.estimated_diameter.meters.estimated_diameter_max / 150));
+        // Scala le dimensioni a schermo proporzionalmente in base alla stima massima NASA
+        const actualDiameter = neo.estimated_diameter.meters.estimated_diameter_max;
+        
+        // Moltiplichiamo proporzionalmente permettendo estrema variazione.
+        // Cap minimo = 0.15 (non deve sparire)
+        // Cap massimo = 12.0 (asteroide abnorme)
+        const visualRadius = Math.min(12.0, Math.max(0.15, (actualDiameter / 100) * 0.7));
 
         // J.A.R.V.I.S. specific colors
         const colorHex = isHazardous ? 0xBB1111 : 0x117733;
@@ -364,7 +456,8 @@ function createInteractiveAsteroids(neos) {
         astMesh.add(marker);
 
         // --- HALO / AUREOLA PULSANTE ---
-        const haloBaseScale = isHazardous ? 35 : 25;
+        // L'alone si scala in modo proporzionale per adattarsi anche agli asteroidi enormi
+        const haloBaseScale = (isHazardous ? 30 : 20) + (visualRadius * 4);
         const haloMat = new THREE.PointsMaterial({
             map: isHazardous ? texHazard : texSafe,
             transparent: true, opacity: 0.75,
