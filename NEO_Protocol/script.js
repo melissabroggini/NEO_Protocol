@@ -68,7 +68,7 @@ function init() {
     const renderScene = new THREE.RenderPass(scene, camera);
     const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
     bloomPass.threshold = 0.2;
-    bloomPass.strength = 0.8;
+    bloomPass.strength = 0; // Glow disabled
     bloomPass.radius = 0.4;
 
     composer = new THREE.EffectComposer(renderer);
@@ -508,7 +508,7 @@ function createInteractiveAsteroids(neos) {
             // Tooltip visibile con opacità per non sovrapporsi in modo sporco
             tooltip.className = 'absolute bottom-full mb-1 left-1/2 -translate-x-1/2 opacity-0 group-hover/bar:opacity-100 transition-opacity flex items-center justify-center bg-surface border border-outline-variant/40 text-[9px] font-[\'Inter\'] px-2 py-1 text-white whitespace-nowrap z-50 pointer-events-none rounded shadow-none';
             
-            tooltip.innerHTML = `<span class="opacity-50 mr-1 pb-0.5">${labelRange} km/s:</span><span class="font-bold text-glow text-[11px]">${count} AST.</span>`;
+            tooltip.innerHTML = `<span class="opacity-50 mr-1 pb-0.5">${labelRange} km/s:</span><span class="font-bold text-[11px]">${count} AST.</span>`;
             bar.appendChild(tooltip);
 
             chartContainer.appendChild(bar);
@@ -581,7 +581,7 @@ function focusOnAsteroid(ast) {
 
     const b = document.getElementById('neo-hazard-badge');
     b.innerText = d.isHazardous ? "PHA THREAT" : "SAFE";
-    b.className = `inline-block text-2xl text-center font-bold uppercase tracking-widest ${d.isHazardous ? 'text-[#FF0000] [text-shadow:0_0_8px_rgba(255,0,0,0.8)]' : 'text-[#00FF00] [text-shadow:0_0_8px_rgba(0,255,0,0.8)]'}`;
+    b.className = `inline-block text-2xl text-center font-bold uppercase tracking-widest ${d.isHazardous ? 'text-[#FF0000]' : 'text-[#00FF00]'}`;
 
     const infoTitle = document.getElementById('info-panel-title');
     if (infoTitle) infoTitle.innerText = "Target Locked";
