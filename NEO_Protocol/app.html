@@ -244,44 +244,41 @@
             <div class="w-[200px]"></div>
 
             <!-- Timeline wrapper (holographic container) -->
-            <div id="timeline-container"
-                class="flex-1 max-w-[600px] holographic-panel bg-surface/40 backdrop-blur-md p-3 flex flex-col items-center opacity-0 transition-opacity duration-500 rounded-2xl border border-primary/20 relative shadow-[0_0_15px_rgba(255,255,255,0.08)]">
-
+            <div id="timeline-container" class="flex-1 max-w-[600px] relative opacity-0 transition-opacity duration-500 flex flex-col items-center">
+                
                 <!-- Camera Controls -->
-                <div class="absolute -top-16 left-1/2 -translate-x-1/2 flex items-center gap-4">
+                <div class="absolute -top-16 left-1/2 -translate-x-1/2 flex items-center gap-4 w-max z-10">
                     <button id="prev-ast-btn"
-                        class="w-[160px] py-3 holographic-panel bg-surface/80 backdrop-blur-md border border-primary/20 rounded-2xl text-white font-['Inter'] text-[0.75rem] font-semibold tracking-[1.17px] uppercase hover:bg-primary/20 hover:text-white transition-all duration-300 cursor-pointer shadow-[0_0_15px_rgba(255,255,255,0.08)]">
+                        class="w-[160px] py-3 holographic-panel bg-surface/40 backdrop-blur-md border border-primary/20 rounded-2xl text-white font-['Inter'] text-[0.75rem] font-semibold tracking-[1.17px] uppercase hover:bg-primary/20 hover:text-white transition-all duration-300 cursor-pointer shadow-[0_0_15px_rgba(255,255,255,0.08)]">
                         Prev Target
                     </button>
 
                     <button id="reset-cam-btn"
-                        class="w-[240px] py-3 holographic-panel bg-surface/80 backdrop-blur-md border border-primary/20 rounded-2xl text-white font-['Inter'] text-[0.75rem] font-semibold tracking-[1.17px] uppercase hover:bg-primary/20 hover:text-white transition-all duration-300 cursor-pointer shadow-[0_0_15px_rgba(255,255,255,0.08)]">
+                        class="w-[240px] py-3 holographic-panel bg-surface/40 backdrop-blur-md border border-primary/20 rounded-2xl text-white font-['Inter'] text-[0.75rem] font-semibold tracking-[1.17px] uppercase hover:bg-primary/20 hover:text-white transition-all duration-300 cursor-pointer shadow-[0_0_15px_rgba(255,255,255,0.08)]">
                         Get back to earth
                     </button>
 
                     <button id="next-ast-btn"
-                        class="w-[160px] py-3 holographic-panel bg-surface/80 backdrop-blur-md border border-primary/20 rounded-2xl text-white font-['Inter'] text-[0.75rem] font-semibold tracking-[1.17px] uppercase hover:bg-primary/20 hover:text-white transition-all duration-300 cursor-pointer shadow-[0_0_15px_rgba(255,255,255,0.08)]">
+                        class="w-[160px] py-3 holographic-panel bg-surface/40 backdrop-blur-md border border-primary/20 rounded-2xl text-white font-['Inter'] text-[0.75rem] font-semibold tracking-[1.17px] uppercase hover:bg-primary/20 hover:text-white transition-all duration-300 cursor-pointer shadow-[0_0_15px_rgba(255,255,255,0.08)]">
                         Next Target
                     </button>
+                </div>
 
-                </div>
-                <div
-                    class="flex justify-between w-full text-[9px] text-outline font-['Inter'] mb-2 uppercase tracking-widest">
-                    <span id="time-start">--</span>
-                    <span id="time-current" class="text-primary font-bold text-xs ">CALCULATING
-                        EPHEMERIS...</span>
-                    <span id="time-end">--</span>
-                </div>
-                <div class="flex items-center w-full gap-4">
-                    <button id="play-pause-btn"
-                        class="text-primary hover:text-white transition-colors material-symbols-outlined shrink-0 drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">pause</button>
-                    <input type="range" id="time-slider" min="0" max="1000" value="500" class="w-full cursor-pointer">
-                    <div class="flex gap-3 ml-2 shrink-0 font-['Inter'] text-[13px] font-bold">
-                        <button class="speed-btn text-primary/40 hover:text-primary transition-colors"
-                            data-speed="1000">1X</button>
-                        <button class="speed-btn text-primary  transition-colors" data-speed="10000">10X</button>
-                        <button class="speed-btn text-primary/40 hover:text-primary transition-colors"
-                            data-speed="100000">100X</button>
+                <!-- Timeline Panel -->
+                <div class="w-full holographic-panel bg-surface/40 backdrop-blur-md p-3 flex flex-col items-center rounded-2xl border border-primary/20 shadow-[0_0_15px_rgba(255,255,255,0.08)] relative z-0">
+                    <div class="flex justify-between w-full text-[9px] text-outline font-['Inter'] mb-2 uppercase tracking-widest">
+                        <span id="time-start">--</span>
+                        <span id="time-current" class="text-primary font-bold text-xs ">CALCULATING EPHEMERIS...</span>
+                        <span id="time-end">--</span>
+                    </div>
+                    <div class="flex items-center w-full gap-4">
+                        <button id="play-pause-btn" class="text-primary hover:text-white transition-colors material-symbols-outlined shrink-0 drop-shadow-[0_0_5px_rgba(255,255,255,0.3)]">pause</button>
+                        <input type="range" id="time-slider" min="0" max="1000" value="500" class="w-full cursor-pointer">
+                        <div class="flex gap-3 ml-2 shrink-0 font-['Inter'] text-[13px] font-bold">
+                            <button class="speed-btn text-primary/40 hover:text-primary transition-colors" data-speed="1000">1X</button>
+                            <button class="speed-btn text-primary  transition-colors" data-speed="10000">10X</button>
+                            <button class="speed-btn text-primary/40 hover:text-primary transition-colors" data-speed="100000">100X</button>
+                        </div>
                     </div>
                 </div>
             </div>
