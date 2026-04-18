@@ -4,6 +4,14 @@ const LUNAR_DISTANCE_VISUAL = 120;
 const KM_TO_LD = 384400;
 const EARTH_GRAV_MU = 398600;
 
+// Helper per formattare i numeri con apostrofo svizzero (es: 3'278'833)
+function formatSwiss(num, decimals = 0) {
+    if (num === null || num === undefined || isNaN(num)) return "--";
+    const parts = Number(num).toFixed(decimals).split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, "'");
+    return parts.join('.');
+}
+
 let scene, camera, renderer, controls, composer;
 let earth, moon, asteroidSwarm;
 let realAsteroids = [];
@@ -513,8 +521,8 @@ function createInteractiveAsteroids(neos) {
         astMesh.userData = {
             name: neo.name, isHazardous,
             diameter: `${Math.round(neo.estimated_diameter.meters.estimated_diameter_min)}-${Math.round(neo.estimated_diameter.meters.estimated_diameter_max)}m`,
-            speed: speedKps.toFixed(2), km: d_km.toLocaleString('it-IT'), k_km: k_km.toLocaleString('en-US', { maximumFractionDigits: 0 }),
-            date: new Date(parseInt(approach.epoch_date_close_approach)).toLocaleString('it-IT', { timeZone: 'Europe/Zurich', timeZoneName: 'short' }),
+            speed: speedKps.toFixed(2), km: formatSwiss(d_km), k_km: formatSwiss(k_km),
+            date: new Date(parseInt(approach.epoch_date_close_approach)).toLocaleString('it-IT', { timeZone: 'Europe/Zurich', timeZoneName: 'short' }).replace(/\//g, '.'),
             approachTimestamp: parseInt(approach.epoch_date_close_approach),
             periapsisDir, semiMinorDir, e, a: a_visual, n: n_rad_hr, traj
         };
@@ -525,10 +533,10 @@ function createInteractiveAsteroids(neos) {
     });
 
     // Set HUD Global stats correctly
-    document.getElementById('stat-total').innerText = neos.length.toLocaleString();
+    document.getElementById('stat-total').innerText = formatSwiss(neos.length);
     const thousandsKm = nearestKm / 1000;
-    document.getElementById('stat-nearest').innerHTML = thousandsKm.toLocaleString('en-US', { maximumFractionDigits: 0 }) + 'K <span class="text-[10px] opacity-50">KM</span>';
-    document.getElementById('stat-speed').innerHTML = fastAsteroids.toFixed(1) + ' <span class="text-[10px] opacity-50">KM/S</span>';
+    document.getElementById('stat-nearest').innerText = formatSwiss(thousandsKm) + 'K';
+    document.getElementById('stat-speed').innerText = fastAsteroids.toFixed(1);
     document.getElementById('stat-threats').innerText = phaCount.toString().padStart(2, '0');
 
     // Generate Radar Blips
