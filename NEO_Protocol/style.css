@@ -1,0 +1,152 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #02040A;
+    color: #E0FFFF;
+    font-family: 'Rajdhani', sans-serif;
+}
+
+#canvas-container {
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+/* Scanline effect */
+.scanlines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.1) 50%, rgba(0, 0, 0, 0.1));
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0.2;
+}
+
+.holographic-panel {
+    background: transparent;
+    position: relative;
+}
+
+/* Corner accent removed for modern rounded UI */
+.corner-accent::before {
+    display: none;
+}
+
+.radar-grid {
+    background-size: 20px 20px;
+    background-image: linear-gradient(to right, rgba(13, 227, 242, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(13, 227, 242, 0.05) 1px, transparent 1px);
+}
+
+@keyframes pulse-cyan {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+}
+
+.animate-pulse-cyan {
+    animation: pulse-cyan 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes scan {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(300px);
+    }
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.text-glow {
+    text-shadow: 0 0 8px rgba(13, 227, 242, 0.6);
+}
+
+.text-glow-amber {
+    text-shadow: 0 0 8px rgba(255, 184, 0, 0.6);
+}
+
+.tracking-wide-custom {
+    letter-spacing: 0.3em;
+}
+
+.loader {
+    border: 4px solid rgba(13, 227, 242, 0.1);
+    border-left-color: #0de3f2;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(13, 227, 242, 0.2);
+    height: 4px;
+    border-radius: 2px;
+    outline: none;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #0de3f2;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(13, 227, 242, 0.8);
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+::-webkit-scrollbar {
+    width: 4px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(13, 227, 242, 0.3);
+    border-radius: 2px;
+}
