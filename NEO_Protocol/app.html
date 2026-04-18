@@ -191,6 +191,10 @@
                         class="font-['Space_Grotesk'] font-semibold text-sm tracking-[1.17px] text-primary uppercase flex items-center gap-3">
                         Tactical Radar
                     </h2>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[9px] text-outline uppercase tracking-widest font-['Inter']">RANGE</span>
+                        <input type="range" id="radar-range" min="500" max="15000" value="3000" class="w-16">
+                    </div>
                 </div>
                 <div class="w-full h-[200px] flex relative rounded-xl overflow-hidden mt-1 bg-gradient-to-b from-[#131313]/80 to-[#131313]/30">
                     <canvas id="radar3d-canvas" class="w-full h-full relative z-0"></canvas>
