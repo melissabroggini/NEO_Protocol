@@ -61,8 +61,8 @@ function init() {
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.toneMapping = THREE.ReinhardToneMapping;
-    renderer.toneMappingExposure = 1.5;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.95;
     container.appendChild(renderer.domElement);
 
     const renderScene = new THREE.RenderPass(scene, camera);
@@ -81,10 +81,12 @@ function init() {
     controls.minDistance = 3.5;
     controls.maxDistance = 300000;
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Cyan tinted ambient
-    scene.add(ambientLight);
+    // Luce d'ambiente sferica aumentata per riempire le ombre e renderle blu scuro/grigie invece che nere
+    const hemiLight = new THREE.HemisphereLight(0x36486b, 0x24344d, 1.5);
+    scene.add(hemiLight);
 
-    const sunLight = new THREE.DirectionalLight(0xfff5e6, 3.5);
+    // Luce "solare" meno forte e leggermente meno calda per evitare bruciature sui materiali
+    const sunLight = new THREE.DirectionalLight(0xfffaea, 1.0);
     sunLight.position.set(-1500, 500, 1000);
     scene.add(sunLight);
 
@@ -313,13 +315,13 @@ function createInteractiveAsteroids(neos) {
         const ctx = c.getContext('2d');
         const grad = ctx.createRadialGradient(64, 64, 4, 64, 64, 60);
         if (isHazard) {
-            grad.addColorStop(0,   'rgba(255, 60,  30, 0.9)');
-            grad.addColorStop(0.3, 'rgba(255, 40,  10, 0.5)');
-            grad.addColorStop(1,   'rgba(255,  0,   0, 0.0)');
+            grad.addColorStop(0, 'rgba(255, 42, 42, 0.85)');
+            grad.addColorStop(0.3, 'rgba(255, 42, 42, 0.45)');
+            grad.addColorStop(1, 'rgba(255, 42, 42, 0.0)');
         } else {
-            grad.addColorStop(0,   'rgba(80, 255, 120, 0.9)');
-            grad.addColorStop(0.3, 'rgba(30, 255,  80, 0.5)');
-            grad.addColorStop(1,   'rgba( 0, 255,   0, 0.0)');
+            grad.addColorStop(0, 'rgba(16, 229, 96, 0.85)');
+            grad.addColorStop(0.3, 'rgba(16, 229, 96, 0.45)');
+            grad.addColorStop(1, 'rgba(16, 229, 96, 0.0)');
         }
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, 128, 128);
@@ -344,14 +346,14 @@ function createInteractiveAsteroids(neos) {
         const visualRadius = Math.min(3.5, Math.max(0.6, neo.estimated_diameter.meters.estimated_diameter_max / 150));
 
         // J.A.R.V.I.S. specific colors
-        const colorHex = isHazardous ? 0x550000 : 0x005500;
+        const colorHex = isHazardous ? 0xBB1111 : 0x117733;
         const emissiveHex = 0x000000;
 
         const astMesh = new THREE.Mesh(createProceduralAsteroidGeometry(visualRadius), new THREE.MeshStandardMaterial({
             color: colorHex, emissive: emissiveHex, emissiveIntensity: 0.0, roughness: 0.9, flatShading: true
         }));
 
-        const markerColorHex = isHazardous ? 0xFF0000 : 0x00FF00;
+        const markerColorHex = isHazardous ? 0xFF2A2A : 0x10E560;
         const markerGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0)]);
         const markerMat = new THREE.PointsMaterial({
             color: markerColorHex, // Keep markers bright so they are visible from far away
@@ -364,7 +366,7 @@ function createInteractiveAsteroids(neos) {
         // --- HALO / AUREOLA PULSANTE ---
         const haloBaseScale = isHazardous ? 35 : 25;
         const haloMat = new THREE.PointsMaterial({
-            map: isHazardous ? texHazard : texSafe, 
+            map: isHazardous ? texHazard : texSafe,
             transparent: true, opacity: 0.75,
             blending: THREE.AdditiveBlending, depthWrite: false,
             sizeAttenuation: false, size: haloBaseScale
@@ -444,8 +446,8 @@ function createInteractiveAsteroids(neos) {
         blip.className = `absolute rounded-full shadow-neon animate-pulse-cyan`;
         blip.style.width = ast.userData.isHazardous ? '6px' : '4px';
         blip.style.height = ast.userData.isHazardous ? '6px' : '4px';
-        blip.style.backgroundColor = ast.userData.isHazardous ? '#FF0000' : '#00FF00';
-        blip.style.boxShadow = `0 0 8px ${ast.userData.isHazardous ? 'rgba(255,0,0,0.8)' : 'rgba(0,255,0,0.8)'}`;
+        blip.style.backgroundColor = ast.userData.isHazardous ? '#FF2A2A' : '#10E560';
+        blip.style.boxShadow = `0 0 8px ${ast.userData.isHazardous ? 'rgba(255,42,42,0.8)' : 'rgba(16,229,96,0.8)'}`;
         blip.style.transform = 'translate(-50%, -50%)';
         if (radarBlips) radarBlips.appendChild(blip);
         ast.userData.radarBlip = blip;
@@ -454,11 +456,11 @@ function createInteractiveAsteroids(neos) {
     // Populate Velocity Chart
     const speeds = neos.map(neo => parseFloat(neo.close_approach_data[0].relative_velocity.kilometers_per_second));
     const maxSpeed = Math.ceil(Math.max(...speeds)) || 1;
-    
+
     // Creiamo 7 barre, dividendo la velocità massima in 7 intervalli
     const binSize = maxSpeed / 7;
     const bins = [0, 0, 0, 0, 0, 0, 0];
-    
+
     speeds.forEach(v => {
         let index = Math.floor(v / binSize);
         if (index > 6) index = 6;
@@ -485,7 +487,7 @@ function createInteractiveAsteroids(neos) {
             const pct = (count / maxBin) * 100; // Il massimo tocca perfettamente il MAX in y-axis
             const bar = document.createElement('div');
             const intensity = (count / maxBin); // 0.0 to 1.0
-            
+
             bar.className = 'w-full relative group/bar cursor-pointer transition-all duration-300 group-hover/chart:opacity-30 hover:!opacity-100 hover:!bg-on-surface hover:!text-on-primary border border-primary bg-transparent backdrop-blur-md';
             // Animazione dell'altezza
             bar.style.height = `0%`;
@@ -507,7 +509,7 @@ function createInteractiveAsteroids(neos) {
             const tooltip = document.createElement('div');
             // Tooltip visibile con opacità per non sovrapporsi in modo sporco
             tooltip.className = 'absolute bottom-full mb-1 left-1/2 -translate-x-1/2 opacity-0 group-hover/bar:opacity-100 transition-opacity flex items-center justify-center bg-surface border border-outline-variant/40 text-[9px] font-[\'Inter\'] px-2 py-1 text-white whitespace-nowrap z-50 pointer-events-none rounded shadow-none';
-            
+
             tooltip.innerHTML = `<span class="opacity-50 mr-1 pb-0.5">${labelRange} km/s:</span><span class="font-bold text-[11px]">${count} AST.</span>`;
             bar.appendChild(tooltip);
 
@@ -581,7 +583,7 @@ function focusOnAsteroid(ast) {
 
     const b = document.getElementById('neo-hazard-badge');
     b.innerText = d.isHazardous ? "PHA THREAT" : "SAFE";
-    b.className = `inline-block text-2xl text-center font-bold uppercase tracking-widest ${d.isHazardous ? 'text-[#FF0000]' : 'text-[#00FF00]'}`;
+    b.className = `inline-block text-2xl text-center font-bold uppercase tracking-widest ${d.isHazardous ? 'text-[#FF2A2A]' : 'text-[#10E560]'}`;
 
     const infoTitle = document.getElementById('info-panel-title');
     if (infoTitle) infoTitle.innerText = "Target Locked";
@@ -685,17 +687,17 @@ function animate(time) {
             const t = performance.now() / 1000;
             // Oscilla fluidamente tra -1 e 1
             const oscillator = Math.sin(t * 1.8 + ast.userData.halo.userData.pulseOffset);
-            
+
             // Amplifica la pulsazione della grandezza in maniera molto lieve (da 0.95x a 1.05x)
             const pulse = 1.0 + 0.05 * oscillator;
-            
+
             // Calcola la distanza dalla telecamera per scalare gli aloni e prevenire l'effetto "miasma" da lontano
             const dist = camera.position.distanceTo(ast.position);
             const zoomFactor = Math.max(0.18, Math.min(1.0, 50.0 / dist));
-            
+
             const s = ast.userData.halo.userData.baseScale * pulse * zoomFactor;
             ast.userData.halo.material.size = s;
-            
+
             // Sincronizza l'opacità per renderla più stabile (da 0.6 a 0.8)
             const baseOp = 0.7 + 0.1 * oscillator;
             ast.userData.halo.material.opacity = baseOp * Math.max(0.6, zoomFactor);
