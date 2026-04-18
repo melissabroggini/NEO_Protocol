@@ -138,6 +138,17 @@ function init() {
     renderer.domElement.addEventListener('pointerdown', onPointerDown);
     if (closeBtn) closeBtn.addEventListener('click', closePanel);
     resetBtn.addEventListener('click', resetCamera);
+
+    const radarRangeSlider = document.getElementById('radar-range');
+    const radarRangeDisplay = document.getElementById('radar-range-display');
+    if (radarRangeSlider && radarRangeDisplay) {
+        radarRangeSlider.addEventListener('input', () => {
+            const valKm = parseInt(radarRangeSlider.value) * KM_TO_LD;
+            radarRangeDisplay.innerText = formatSwiss(valKm) + ' KM';
+        });
+        const initialKm = parseInt(radarRangeSlider.value) * KM_TO_LD;
+        radarRangeDisplay.innerText = formatSwiss(initialKm) + ' KM';
+    }
     if (prevAstBtn) prevAstBtn.addEventListener('click', focusPrevAsteroid);
     if (nextAstBtn) nextAstBtn.addEventListener('click', focusNextAsteroid);
 
@@ -945,10 +956,14 @@ function draw3DRadar() {
     const camRight = new THREE.Vector3(-camDir.z, 0, camDir.x); // Perpendicular to forward
 
     // Draw center indicator
-    ctx.fillStyle = "rgba(255, 255, 255, 1)";
+    ctx.strokeStyle = "rgba(255, 255, 255, 1)";
+    ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.arc(centerX, centerY, 4, 0, 2 * Math.PI);
-    ctx.fill();
+    ctx.moveTo(centerX, centerY - 5);
+    ctx.lineTo(centerX - 4, centerY + 3);
+    ctx.lineTo(centerX + 4, centerY + 3);
+    ctx.closePath();
+    ctx.stroke();
 
     // Iterate objects
     const drawBlip = (worldPos, isHazardous, fakeTypeStr) => {
@@ -975,8 +990,8 @@ function draw3DRadar() {
         // Colors
         let objColor = isHazardous ? "#FF2A2A" : "#10E560"; 
         let altColor = "rgba(255, 255, 255, 0.3)"; // Stalk color
-        let isHollow = fakeTypeStr !== 'moon' && fakeTypeStr !== 'earth'; // All asteroids are hollow
-
+        let isHollow = fakeTypeStr !== 'earth'; // All asteroids and the moon are hollow
+        
         if (fakeTypeStr === 'moon' || fakeTypeStr === 'earth') objColor = "#FFFFFF";
 
         // Draw stalk
@@ -1001,7 +1016,9 @@ function draw3DRadar() {
         ctx.beginPath();
         if (fakeTypeStr === 'rect') {
             ctx.rect(screenX - 3, displayY - 3, 6, 6);
-        } else if (fakeTypeStr === 'moon' || fakeTypeStr === 'earth') {
+        } else if (fakeTypeStr === 'moon') {
+            ctx.arc(screenX, displayY, 4, 0, 2 * Math.PI);
+        } else if (fakeTypeStr === 'earth') {
             ctx.arc(screenX, displayY, 4, 0, 2 * Math.PI);
         } else {
             // triangle
