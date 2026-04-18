@@ -687,7 +687,7 @@ function focusOnAsteroid(ast) {
     document.getElementById('neo-date').innerText = d.date;
 
     const b = document.getElementById('neo-hazard-badge');
-    b.innerText = d.isHazardous ? "PHA THREAT" : "SAFE";
+    b.innerText = d.isHazardous ? "ACTIVE THREAT" : "SAFE";
     b.className = `inline-block text-2xl text-center font-bold uppercase tracking-widest ${d.isHazardous ? 'text-[#FF2A2A]' : 'text-[#10E560]'}`;
 
     const infoTitle = document.getElementById('info-panel-title');
