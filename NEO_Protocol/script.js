@@ -905,7 +905,8 @@ function draw3DRadar() {
 
     // Radar configuration
     const radarRadiusLines = 4;
-    const radarMaxRange = 3000; // max visual radius (a bit tighter than the old minimap for better vertical visibility)
+    const rangeSlider = document.getElementById('radar-range');
+    const radarMaxRange = rangeSlider ? parseInt(rangeSlider.value) : 3000; // max visual radius controlled by slider
     const scale = (w * 0.45) / radarMaxRange; // scale factor mapping world units to canvas pixels
     const perspectiveY = 0.4; // 0.4 y-scale to squash the circle into an ellipse
 
