@@ -901,7 +901,7 @@ function draw3DRadar() {
     ctx.clearRect(0, 0, w, h);
 
     const centerX = w / 2;
-    const centerY = h * 0.6; // Center is slightly below middle to leave room for height stalks
+    const centerY = h * 0.5; // Centered vertically
 
     // Radar configuration
     const radarRadiusLines = 4;
@@ -928,11 +928,8 @@ function draw3DRadar() {
     ctx.lineTo(centerX, centerY + (radarMaxRange * scale * perspectiveY));
     ctx.stroke();
 
-    // The center reference point (Camera Target or Earth)
-    let centerPos = new THREE.Vector3(0, 0, 0);
-    if (trackedAsteroid) {
-        centerPos = trackedAsteroid.position.clone();
-    }
+    // The center reference point (Camera Target)
+    let centerPos = controls.target.clone();
 
     // Getting camera basis vectors for rotation (Flattened onto XZ plane for "forward" orientation)
     const camDir = new THREE.Vector3();
@@ -946,16 +943,11 @@ function draw3DRadar() {
     }
     const camRight = new THREE.Vector3(-camDir.z, 0, camDir.x); // Perpendicular to forward
 
-    // Draw center indicator representing your ship
-    ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
-    ctx.lineWidth = 2;
+    // Draw center indicator
+    ctx.fillStyle = "rgba(255, 255, 255, 1)";
     ctx.beginPath();
-    ctx.moveTo(centerX, centerY - 6);
-    ctx.lineTo(centerX - 5, centerY + 5);
-    ctx.lineTo(centerX + 5, centerY + 5);
-    ctx.closePath();
-    ctx.stroke();
+    ctx.arc(centerX, centerY, 4, 0, 2 * Math.PI);
+    ctx.fill();
 
     // Iterate objects
     const drawBlip = (worldPos, isHazardous, fakeTypeStr) => {
@@ -982,7 +974,7 @@ function draw3DRadar() {
         // Colors
         let objColor = isHazardous ? "#FF2A2A" : "#10E560"; 
         let altColor = "rgba(255, 255, 255, 0.3)"; // Stalk color
-        let isHollow = !isHazardous && fakeTypeStr !== 'moon'; // AI filled, Player hollow. We use hazardous as "filled" just to differentiate
+        let isHollow = fakeTypeStr !== 'moon' && fakeTypeStr !== 'earth'; // All asteroids are hollow
 
         if (fakeTypeStr === 'moon' || fakeTypeStr === 'earth') objColor = "#FFFFFF";
 
@@ -1035,16 +1027,11 @@ function draw3DRadar() {
     };
 
     if (moon) drawBlip(moon.position, false, 'moon');
-    if (!trackedAsteroid && earth) {
-        // Earth is center, do nothing
-    } else if (earth) {
+    if (earth && centerPos.lengthSq() > 0.001) {
         drawBlip(earth.position, false, 'earth');
     }
 
     realAsteroids.forEach((ast) => {
-        // Just map shape on speed arbitrarily
-        const speed = parseFloat(ast.userData.speed || "0");
-        const shapeStr = speed > 15 ? 'triangle' : 'rect';
-        drawBlip(ast.position, ast.userData.isHazardous, shapeStr);
+        drawBlip(ast.position, ast.userData.isHazardous, 'rect');
     });
 }
