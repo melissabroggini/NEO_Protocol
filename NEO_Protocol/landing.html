@@ -162,7 +162,7 @@
                 renderer.setClearColor(0x050508, 1);
                 renderer.toneMapping = THREE.ACESFilmicToneMapping;
                 renderer.toneMappingExposure = 1.2;
-                
+
                 // Fix for the stretched look: force absolute positioning on the canvas
                 const canvas = renderer.domElement;
                 canvas.style.position = 'absolute';
@@ -174,12 +174,17 @@
 
                 // --- LIGHTS ---
                 scene.add(new THREE.AmbientLight(0x1a2333, 0.6)); 
-                const sunLight = new THREE.DirectionalLight(0xfff5e0, 5.0);
+                const sunLight = new THREE.DirectionalLight(0xfff5e0, 6.5); 
                 sunLight.position.set(400, 400, 200); 
                 scene.add(sunLight);
-                const rimLight = new THREE.DirectionalLight(0x4488ff, 2.0);
+                const rimLight = new THREE.DirectionalLight(0x4488ff, 2.5);
                 rimLight.position.set(-200, -100, -200);
                 scene.add(rimLight);
+
+                // New pronounced light for asteroids highlights
+                const astLight = new THREE.PointLight(0xffffff, 1500, 600);
+                astLight.position.set(-60, 40, 100);
+                scene.add(astLight);
 
                 // --- EARTH (Background Layer) ---
                 const EARTH_R = 300; // Ingrandita come via di mezzo
@@ -259,7 +264,7 @@
 
                 astProfiles.forEach(p => {
                     const geo = createSeededAsteroidGeometry(p.r, p);
-                    const mat = new THREE.MeshStandardMaterial({ color: p.color, roughness: 0.95, flatShading: true });
+                    const mat = new THREE.MeshStandardMaterial({ color: p.color, roughness:0.95, flatShading: true });
                     const ast = new THREE.Mesh(geo, mat);
                     ast.position.set(p.x, p.y, p.z);
                     ast.userData = { rot: p.rot, driftX: p.x, driftY: p.y, driftZ: p.z, speed: p.speed };
@@ -272,7 +277,14 @@
                 for (let i = 0; i < 3000 * 3; i++) starPositions[i] = (Math.random() - 0.5) * 4000;
                 const starGeo = new THREE.BufferGeometry();
                 starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-                scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.5, transparent: true, opacity: 0.6 })));
+                const starMat = new THREE.PointsMaterial({ 
+                    color: 0xffffff, 
+                    size: 1.5, 
+                    transparent: true, 
+                    opacity: 0.9, 
+                    sizeAttenuation: true 
+                });
+                scene.add(new THREE.Points(starGeo, starMat));
 
                 // --- ANIMATE ---
                 let t = 0;
