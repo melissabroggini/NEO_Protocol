@@ -86,6 +86,8 @@
             background-color: #131313;
             color: #e2e2e2;
             font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
         }
 
         .material-symbols-outlined {
@@ -160,7 +162,15 @@
                 renderer.setClearColor(0x050508, 1);
                 renderer.toneMapping = THREE.ACESFilmicToneMapping;
                 renderer.toneMappingExposure = 1.2;
-                container.insertBefore(renderer.domElement, container.firstChild);
+                
+                // Fix for the stretched look: force absolute positioning on the canvas
+                const canvas = renderer.domElement;
+                canvas.style.position = 'absolute';
+                canvas.style.top = '0';
+                canvas.style.left = '0';
+                canvas.style.width = '100%';
+                canvas.style.height = '100%';
+                container.insertBefore(canvas, container.firstChild);
 
                 // --- LIGHTS ---
                 scene.add(new THREE.AmbientLight(0x1a2333, 0.6)); 
@@ -171,8 +181,8 @@
                 rimLight.position.set(-200, -100, -200);
                 scene.add(rimLight);
 
-                // --- EARTH ---
-                const EARTH_R = 280; 
+                // --- EARTH (Background Layer) ---
+                const EARTH_R = 300; // Ingrandita come via di mezzo
                 const textureLoader = new THREE.TextureLoader();
                 textureLoader.setCrossOrigin('anonymous');
                 const earthSpecular = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_specular_2048.jpg');
@@ -189,7 +199,7 @@
                 earth.add(new THREE.Mesh(new THREE.SphereGeometry(EARTH_R * 0.99, 32, 32), new THREE.MeshBasicMaterial({ color: 0x131313 })));
 
                 earth.rotation.z = 23.5 * Math.PI / 180;
-                earth.position.set(220, -50, -350); 
+                earth.position.set(280, -50, -350); 
                 scene.add(earth);
 
                 // --- DETERMINISTIC PROCEDURAL ASTEROIDS ---
@@ -240,7 +250,7 @@
                         rot: { x: -0.0008, y: 0.0012, z: -0.0004 }, speed: 0.8
                     },
                     { // Green 3
-                        r: 7, color: 0x117733, x: 18, y: -8, z: 20, 
+                        r: 7, color: 0x117733, x: 15, y: -10, z: 25, 
                         stretchX: 0.9, stretchY: 0.9, stretchZ: 1.4, noiseAmp: 0.18,
                         craters: [{ dir: new THREE.Vector3(0.8, -0.3, -0.2).normalize(), size: 0.28, depth: 0.14 }],
                         rot: { x: 0.0005, y: 0.0006, z: 0.001 }, speed: 0.9
