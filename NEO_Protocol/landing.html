@@ -163,7 +163,6 @@
                 renderer.toneMapping = THREE.ACESFilmicToneMapping;
                 renderer.toneMappingExposure = 1.2;
 
-                // Fix for the stretched look: force absolute positioning on the canvas
                 const canvas = renderer.domElement;
                 canvas.style.position = 'absolute';
                 canvas.style.top = '0';
@@ -172,22 +171,29 @@
                 canvas.style.height = '100%';
                 container.insertBefore(canvas, container.firstChild);
 
-                // --- LIGHTS ---
-                scene.add(new THREE.AmbientLight(0x1a2333, 0.6)); 
-                const sunLight = new THREE.DirectionalLight(0xfff5e0, 6.5); 
+                // --- LIGHTS (Boosted for better visibility) ---
+                scene.add(new THREE.AmbientLight(0x223355, 1.0)); // Stronger ambient base
+                
+                const sunLight = new THREE.DirectionalLight(0xfff5e0, 9.0); // Intense sunlight
                 sunLight.position.set(400, 400, 200); 
                 scene.add(sunLight);
-                const rimLight = new THREE.DirectionalLight(0x4488ff, 2.5);
+                
+                const rimLight = new THREE.DirectionalLight(0x4488ff, 3.5); // Brighter blue rim
                 rimLight.position.set(-200, -100, -200);
                 scene.add(rimLight);
 
-                // New pronounced light for asteroids highlights
-                const astLight = new THREE.PointLight(0xffffff, 1500, 600);
-                astLight.position.set(-60, 40, 100);
+                // Dedicated light for asteroids (increased intensity)
+                const astLight = new THREE.PointLight(0xffffff, 3500, 800);
+                astLight.position.set(-60, 40, 150);
                 scene.add(astLight);
 
-                // --- EARTH (Background Layer) ---
-                const EARTH_R = 300; // Ingrandita come via di mezzo
+                // Dedicated light to make Earth pop
+                const earthLight = new THREE.PointLight(0xffffff, 2500, 1000);
+                earthLight.position.set(150, 0, 50);
+                scene.add(earthLight);
+
+                // --- EARTH ---
+                const EARTH_R = 300; 
                 const textureLoader = new THREE.TextureLoader();
                 textureLoader.setCrossOrigin('anonymous');
                 const earthSpecular = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_specular_2048.jpg');
@@ -196,7 +202,7 @@
                 const continentMat = new THREE.ShaderMaterial({
                     uniforms: { tSpecular: { value: earthSpecular }, color: { value: new THREE.Color(0xffffff) } },
                     vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-                    fragmentShader: 'uniform sampler2D tSpecular; uniform vec3 color; varying vec2 vUv; void main() { float ocean = texture2D(tSpecular, vUv).r; if (1.0 - ocean < 0.5) discard; gl_FragColor = vec4(color, 0.65); }',
+                    fragmentShader: 'uniform sampler2D tSpecular; uniform vec3 color; varying vec2 vUv; void main() { float ocean = texture2D(tSpecular, vUv).r; if (1.0 - ocean < 0.65) discard; gl_FragColor = vec4(color, 0.65); }',
                     transparent: true, side: THREE.DoubleSide
                 });
                 const earth = new THREE.Mesh(earthGeo, continentMat);
@@ -243,19 +249,19 @@
                         rot: { x: 0.0003, y: 0.0004, z: 0.0002 }, speed: 0.6
                     },
                     { // Green 1
-                        r: 8, color: 0x117733, x: -5, y: -10, z: 50, 
+                        r: 8, color: 0x117733, x: -15, y: -20, z: 50, 
                         stretchX: 1.1, stretchY: 1.2, stretchZ: 0.8, noiseAmp: 0.15,
                         craters: [{ dir: new THREE.Vector3(0.2, 0.8, 0.1).normalize(), size: 0.3, depth: 0.15 }],
                         rot: { x: 0.001, y: -0.0005, z: 0.0008 }, speed: 1.1
                     },
                     { // Green 2
-                        r: 5, color: 0x117733, x: 8, y: 12, z: 40, 
+                        r: 5, color: 0x117733, x: 15, y: 20, z: 35, 
                         stretchX: 1.3, stretchY: 0.7, stretchZ: 1.1, noiseAmp: 0.12,
                         craters: [{ dir: new THREE.Vector3(-0.6, -0.2, 0.5).normalize(), size: 0.2, depth: 0.12 }],
                         rot: { x: -0.0008, y: 0.0012, z: -0.0004 }, speed: 0.8
                     },
                     { // Green 3
-                        r: 7, color: 0x117733, x: 15, y: -10, z: 25, 
+                        r: 7, color: 0x117733, x: 45, y: -8, z: 20, 
                         stretchX: 0.9, stretchY: 0.9, stretchZ: 1.4, noiseAmp: 0.18,
                         craters: [{ dir: new THREE.Vector3(0.8, -0.3, -0.2).normalize(), size: 0.28, depth: 0.14 }],
                         rot: { x: 0.0005, y: 0.0006, z: 0.001 }, speed: 0.9
