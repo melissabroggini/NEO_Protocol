@@ -18,20 +18,23 @@
             letter-spacing: 2px;
         }
     </style>
-    <script>
-        // Router Logic: 
-        // If the user has already visited and clicked the initialize button, send to app
-        // Otherwise, send to landing
-        window.onload = function() {
-            if (localStorage.getItem('hasVisited') === 'true') {
-                window.location.replace('app.html');
-            } else {
-                window.location.replace('landing.html');
-            }
-        };
-    </script>
 </head>
 <body>
     <p>Initializing Sequence...</p>
+    <script>
+        (function() {
+            try {
+                // Eseguiamo il routing immediatamente senza aspettare l'onload
+                const hasVisited = localStorage.getItem('hasVisited') === 'true';
+                const target = hasVisited ? 'app.html' : 'landing.html';
+                
+                // Usiamo location.replace per non salvare index.html nella cronologia
+                window.location.replace(target);
+            } catch (e) {
+                console.error("Router error, falling back to landing:", e);
+                window.location.href = 'landing.html';
+            }
+        })();
+    </script>
 </body>
 </html>
