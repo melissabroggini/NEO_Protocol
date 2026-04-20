@@ -173,11 +173,11 @@
 
                 // --- LIGHTS (Boosted for better visibility) ---
                 scene.add(new THREE.AmbientLight(0x223355, 1.0)); // Stronger ambient base
-                
+
                 const sunLight = new THREE.DirectionalLight(0xfff5e0, 9.0); // Intense sunlight
-                sunLight.position.set(400, 400, 200); 
+                sunLight.position.set(400, 400, 200);
                 scene.add(sunLight);
-                
+
                 const rimLight = new THREE.DirectionalLight(0x4488ff, 3.5); // Brighter blue rim
                 rimLight.position.set(-200, -100, -200);
                 scene.add(rimLight);
@@ -193,7 +193,7 @@
                 scene.add(earthLight);
 
                 // --- EARTH ---
-                const EARTH_R = 300; 
+                const EARTH_R = 300;
                 const textureLoader = new THREE.TextureLoader();
                 textureLoader.setCrossOrigin('anonymous');
                 const earthSpecular = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_specular_2048.jpg');
@@ -202,7 +202,7 @@
                 const continentMat = new THREE.ShaderMaterial({
                     uniforms: { tSpecular: { value: earthSpecular }, color: { value: new THREE.Color(0xffffff) } },
                     vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-                    fragmentShader: 'uniform sampler2D tSpecular; uniform vec3 color; varying vec2 vUv; void main() { float ocean = texture2D(tSpecular, vUv).r; if (1.0 - ocean < 0.65) discard; gl_FragColor = vec4(color, 0.65); }',
+                    fragmentShader: 'uniform sampler2D tSpecular; uniform vec3 color; varying vec2 vUv; void main() { float ocean = texture2D(tSpecular, vUv).r; if (1.0 - ocean < 0.5) discard; gl_FragColor = vec4(color, 0.65); }',
                     transparent: true, side: THREE.DoubleSide
                 });
                 const earth = new THREE.Mesh(earthGeo, continentMat);
@@ -210,7 +210,7 @@
                 earth.add(new THREE.Mesh(new THREE.SphereGeometry(EARTH_R * 0.99, 32, 32), new THREE.MeshBasicMaterial({ color: 0x131313 })));
 
                 earth.rotation.z = 23.5 * Math.PI / 180;
-                earth.position.set(280, -50, -350); 
+                earth.position.set(280, -50, -350);
                 scene.add(earth);
 
                 // --- DETERMINISTIC PROCEDURAL ASTEROIDS ---
@@ -240,7 +240,7 @@
                 const asteroids = [];
                 const astProfiles = [
                     { // Main Red
-                        r: 20, color: 0xBB1111, x: -55, y: 15, z: 60, 
+                        r: 20, color: 0xBB1111, x: -55, y: 15, z: 60,
                         stretchX: 1.5, stretchY: 0.9, stretchZ: 1.2, noiseAmp: 0.22,
                         craters: [
                             { dir: new THREE.Vector3(0.5, -0.2, 0.4).normalize(), size: 0.3, depth: 0.25 },
@@ -249,19 +249,19 @@
                         rot: { x: 0.0003, y: 0.0004, z: 0.0002 }, speed: 0.6
                     },
                     { // Green 1
-                        r: 8, color: 0x117733, x: -15, y: -20, z: 50, 
+                        r: 8, color: 0x117733, x: -15, y: -20, z: 50,
                         stretchX: 1.1, stretchY: 1.2, stretchZ: 0.8, noiseAmp: 0.15,
                         craters: [{ dir: new THREE.Vector3(0.2, 0.8, 0.1).normalize(), size: 0.3, depth: 0.15 }],
                         rot: { x: 0.001, y: -0.0005, z: 0.0008 }, speed: 1.1
                     },
                     { // Green 2
-                        r: 5, color: 0x117733, x: 15, y: 20, z: 35, 
+                        r: 5, color: 0x117733, x: 15, y: 20, z: 35,
                         stretchX: 1.3, stretchY: 0.7, stretchZ: 1.1, noiseAmp: 0.12,
                         craters: [{ dir: new THREE.Vector3(-0.6, -0.2, 0.5).normalize(), size: 0.2, depth: 0.12 }],
                         rot: { x: -0.0008, y: 0.0012, z: -0.0004 }, speed: 0.8
                     },
                     { // Green 3
-                        r: 7, color: 0x117733, x: 45, y: -8, z: 20, 
+                        r: 7, color: 0x117733, x: 45, y: -8, z: 20,
                         stretchX: 0.9, stretchY: 0.9, stretchZ: 1.4, noiseAmp: 0.18,
                         craters: [{ dir: new THREE.Vector3(0.8, -0.3, -0.2).normalize(), size: 0.28, depth: 0.14 }],
                         rot: { x: 0.0005, y: 0.0006, z: 0.001 }, speed: 0.9
@@ -270,7 +270,7 @@
 
                 astProfiles.forEach(p => {
                     const geo = createSeededAsteroidGeometry(p.r, p);
-                    const mat = new THREE.MeshStandardMaterial({ color: p.color, roughness:0.95, flatShading: true });
+                    const mat = new THREE.MeshStandardMaterial({ color: p.color, roughness: 0.95, flatShading: true });
                     const ast = new THREE.Mesh(geo, mat);
                     ast.position.set(p.x, p.y, p.z);
                     ast.userData = { rot: p.rot, driftX: p.x, driftY: p.y, driftZ: p.z, speed: p.speed };
@@ -283,12 +283,12 @@
                 for (let i = 0; i < 3000 * 3; i++) starPositions[i] = (Math.random() - 0.5) * 4000;
                 const starGeo = new THREE.BufferGeometry();
                 starGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-                const starMat = new THREE.PointsMaterial({ 
-                    color: 0xffffff, 
-                    size: 1.5, 
-                    transparent: true, 
-                    opacity: 0.9, 
-                    sizeAttenuation: true 
+                const starMat = new THREE.PointsMaterial({
+                    color: 0xffffff,
+                    size: 1.5,
+                    transparent: true,
+                    opacity: 0.9,
+                    sizeAttenuation: true
                 });
                 scene.add(new THREE.Points(starGeo, starMat));
 
@@ -299,7 +299,7 @@
                     t += 0.0003;
                     earth.rotation.y += 0.0003;
                     asteroids.forEach(ast => {
-                        ast.rotation.x += ast.userData.rot.x; 
+                        ast.rotation.x += ast.userData.rot.x;
                         ast.rotation.y += ast.userData.rot.y;
                         ast.rotation.z += ast.userData.rot.z;
                         ast.position.x = ast.userData.driftX + Math.sin(t * ast.userData.speed) * 4;
