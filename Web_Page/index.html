@@ -21,9 +21,24 @@
         .container { padding: 4vw; }
         .porthole { border-radius: 50%; object-fit: cover; background: #1f2937; }
 
+        .project-list { margin-top: 10vh; border-top: 2px solid #1f2937; }
+        .project-row { 
+            display: grid; 
+            grid-template-columns: 1fr 3fr; 
+            padding: 6vh 0; 
+            border-bottom: 1px solid #1f2937; 
+            align-items: start;
+        }
+        .project-number { font-size: 8vw; color: #1f2937; font-weight: 900; line-height: 1; }
+        .project-content h2 { font-size: 3vw; margin-bottom: 1rem; }
+        .project-report { max-width: 600px; font-size: 1rem; color: #d1d5db; white-space: pre-wrap; margin-bottom: 1.5rem; font-family: 'Inter', sans-serif; font-weight: 400; }
+
         @media (max-width: 768px) {
             .hero h1 { font-size: 15vw; }
             .hero .porthole { width: 40vw !important; height: 40vw !important; }
+            .project-row { grid-template-columns: 1fr; gap: 2vh; }
+            .project-number { font-size: 15vw; }
+            .project-content h2 { font-size: 8vw; }
         }
     </style>
 </head>
@@ -43,6 +58,113 @@
                  style="position: absolute; width: 20vw; height: 20vw; bottom: 10vh; right: 25vw; z-index: 3;" 
                  alt="Astronaut">
         </section>
+
+        <div class="project-list">
+            <div class="project-row">
+                <div class="project-number">01</div>
+                <div class="project-content">
+                    <h2>EXPLORER 1 (1958)</h2>
+                    <div class="project-report">MISSION STATUS: SUCCESSFUL. LAUNCH VEHICLE: JUNO I. FINDINGS: DISCOVERY OF VAN ALLEN RADIATION BELTS.</div>
+                    <a href="#">> ACCESS DATA</a>
+                </div>
+            </div>
+            <div class="project-row">
+                <div class="project-number">02</div>
+                <div class="project-content">
+                    <h2>PROJECT MERCURY (1958-1963)</h2>
+                    <div class="project-report">MISSION STATUS: SUCCESSFUL. OBJECTIVE: FIRST AMERICAN HUMAN SPACEFLIGHT. RESULTS: ALAN SHEPARD REACHES SPACE.</div>
+                    <a href="#">> ACCESS DATA</a>
+                </div>
+            </div>
+            <div class="project-row">
+                <div class="project-number">03</div>
+                <div class="project-content">
+                    <h2>PROJECT GEMINI (1961-1966)</h2>
+                    <div class="project-report">MISSION STATUS: SUCCESSFUL. OBJECTIVE: DOCKING AND SPACEWALK TECHNIQUES.</div>
+                    <a href="#">> ACCESS DATA</a>
+                </div>
+            </div>
+            <div class="project-row">
+                <div class="project-number">04</div>
+                <div class="project-content">
+                    <h2>APOLLO 11 (1969)</h2>
+                    <div class="project-report">MISSION STATUS: SUCCESSFUL. LUNAR MODULE: EAGLE. RESULT: FIRST HUMAN LANDING ON THE MOON.</div>
+                    <a href="#">> ACCESS DATA</a>
+                </div>
+            </div>
+            <div class="project-row">
+                <div class="project-number">05</div>
+                <div class="project-content">
+                    <h2>SKYLAB (1973-1979)</h2>
+                    <div class="project-report">MISSION STATUS: SUCCESSFUL. OBJECTIVE: FIRST U.S. SPACE STATION.</div>
+                    <a href="#">> ACCESS DATA</a>
+                </div>
+            </div>
+            <div class="project-row">
+                <div class="project-number">06</div>
+                <div class="project-content">
+                    <h2>VIKING 1 (1975)</h2>
+                    <div class="project-report">MISSION STATUS: SUCCESSFUL. OBJECTIVE: FIRST SOFT LANDING ON MARS.</div>
+                    <a href="#">> ACCESS DATA</a>
+                </div>
+            </div>
+            <div class="project-row">
+                <div class="project-number">07</div>
+                <div class="project-content">
+                    <h2>VOYAGER 1 (1977)</h2>
+                    <div class="project-report">MISSION STATUS: OPERATIONAL. LOCATION: INTERSTELLAR SPACE.</div>
+                    <a href="#">> ACCESS DATA</a>
+                </div>
+            </div>
+            <div class="project-row">
+                <div class="project-number">08</div>
+                <div class="project-content">
+                    <h2>SPACE SHUTTLE (1981-2011)</h2>
+                    <div class="project-report">MISSION STATUS: RETIRED. TOTAL MISSIONS: 135. FIRST FLIGHT: COLUMBIA.</div>
+                    <a href="#">> ACCESS DATA</a>
+                </div>
+            </div>
+            <div class="project-row">
+                <div class="project-number">09</div>
+                <div class="project-content">
+                    <h2>HUBBLE TELESCOPE (1990)</h2>
+                    <div class="project-report">MISSION STATUS: OPERATIONAL. FINDINGS: AGE OF THE UNIVERSE, DEEP FIELD VIEWS.</div>
+                    <a href="#">> ACCESS DATA</a>
+                </div>
+            </div>
+            <div class="project-row">
+                <div class="project-number">10</div>
+                <div class="project-content">
+                    <h2>INT. SPACE STATION (1998-PRESENT)</h2>
+                    <div class="project-report">MISSION STATUS: OPERATIONAL. OBJECTIVE: PERMANENT HUMAN PRESENCE IN ORBIT.</div>
+                    <a href="#">> ACCESS DATA</a>
+                </div>
+            </div>
+            <div class="project-row">
+                <div class="project-number">11</div>
+                <div class="project-content">
+                    <h2>CURIOSITY ROVER (2011)</h2>
+                    <div class="project-report">MISSION STATUS: OPERATIONAL. LOCATION: GALE CRATER, MARS.</div>
+                    <a href="#">> ACCESS DATA</a>
+                </div>
+            </div>
+            <div class="project-row">
+                <div class="project-number">12</div>
+                <div class="project-content">
+                    <h2>JAMES WEBB TELESCOPE (2021)</h2>
+                    <div class="project-report">MISSION STATUS: OPERATIONAL. OBJECTIVE: INFRARED ASTRONOMY, EARLY UNIVERSE.</div>
+                    <a href="#">> ACCESS DATA</a>
+                </div>
+            </div>
+            <div class="project-row">
+                <div class="project-number">13</div>
+                <div class="project-content">
+                    <h2>ARTEMIS I (2022)</h2>
+                    <div class="project-report">MISSION STATUS: SUCCESSFUL. VEHICLE: SLS. RESULT: DEEPEST LUNAR ORBIT TEST.</div>
+                    <a href="#">> ACCESS DATA</a>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
