@@ -25,14 +25,21 @@
             object-fit: cover; 
             background: #1f2937; 
             filter: grayscale(100%) contrast(120%); 
-            transition: filter 0.5s ease, transform 0.5s ease;
+            transition: filter 0.5s ease, transform 0.5s ease, box-shadow 0.5s ease;
             touch-action: none;
             width: 20vw;
             height: 20vw;
+            box-shadow: 0 0 0 rgba(0,0,0,0);
         }
         .porthole:hover { 
             filter: grayscale(0%) contrast(100%); 
             transform: scale(1.05);
+        }
+        .porthole.dragging {
+            transform: scale(1.1);
+            filter: grayscale(0%) contrast(100%);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+            z-index: 100;
         }
 
         .project-list { margin-top: 10vh; border-top: 2px solid #1f2937; }
@@ -255,6 +262,7 @@
             el.addEventListener('pointerdown', e => {
                 isDragging = true;
                 el.style.cursor = 'grabbing';
+                el.classList.add('dragging');
                 data.x = el.offsetLeft;
                 data.y = el.offsetTop;
                 offset.x = e.clientX - data.x;
@@ -274,12 +282,14 @@
             el.addEventListener('pointerup', e => {
                 isDragging = false;
                 el.style.cursor = 'grab';
+                el.classList.remove('dragging');
                 el.releasePointerCapture(e.pointerId);
             });
 
             el.addEventListener('pointercancel', e => {
                 isDragging = false;
                 el.style.cursor = 'grab';
+                el.classList.remove('dragging');
                 el.releasePointerCapture(e.pointerId);
             });
             
@@ -290,15 +300,18 @@
             const springK = 0.15;
             const friction = 0.8;
             const influenceRadius = window.innerWidth * 0.15;
+            const title = document.querySelector('.hero h1');
+            const offsetX = title ? title.offsetLeft : 0;
+            const offsetY = title ? title.offsetTop : 0;
 
             letters.forEach(letter => {
                 let dx = 0;
                 let dy = 0;
 
                 draggables.forEach(drag => {
-                    // Letter position in viewport (simplified)
-                    const lx = letter.x + letter.curX;
-                    const ly = letter.y + letter.curY;
+                    // Letter position in viewport (aligned with hero container)
+                    const lx = letter.x + letter.curX + offsetX;
+                    const ly = letter.y + letter.curY + offsetY;
                     
                     // Image center
                     const cx = drag.x + drag.radius;
@@ -333,6 +346,11 @@
 
         // Start the loop
         updatePhysics();
+
+        window.addEventListener('resize', () => {
+            // Reload to re-atomize based on new window dimensions
+            location.reload();
+        });
     </script>
 </body>
 </html>
