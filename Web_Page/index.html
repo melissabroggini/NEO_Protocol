@@ -20,11 +20,15 @@
         
         .container { padding: 4vw; }
         .porthole { 
+            position: absolute;
             border-radius: 50%; 
             object-fit: cover; 
             background: #1f2937; 
             filter: grayscale(100%) contrast(120%); 
             transition: filter 0.5s ease, transform 0.5s ease;
+            touch-action: none;
+            width: 20vw;
+            height: 20vw;
         }
         .porthole:hover { 
             filter: grayscale(0%) contrast(100%); 
@@ -60,12 +64,12 @@
             <!-- Portholes -->
             <img src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=800&q=80" 
                  class="porthole" 
-                 style="position: absolute; width: 30vw; height: 30vw; top: 0; right: 5vw; z-index: 1;" 
+                 style="top: 0; right: 5vw; z-index: 1;" 
                  alt="Earth from space">
             
             <img src="https://images.unsplash.com/photo-1454789548928-9efd52dc4031?auto=format&fit=crop&w=800&q=80" 
                  class="porthole" 
-                 style="position: absolute; width: 20vw; height: 20vw; bottom: 10vh; right: 25vw; z-index: 3;" 
+                 style="bottom: 10vh; right: 25vw; z-index: 3;" 
                  alt="Astronaut">
         </section>
 
@@ -232,6 +236,50 @@
 
         // Call it to initialize
         const letters = atomizeTitle();
+
+        const draggables = [];
+        document.querySelectorAll('.porthole').forEach(el => {
+            let isDragging = false;
+            let offset = { x: 0, y: 0 };
+            
+            // Initial state
+            const data = {
+                el,
+                x: el.offsetLeft,
+                y: el.offsetTop,
+                radius: el.offsetWidth / 2
+            };
+            
+            el.style.cursor = 'grab';
+            
+            el.addEventListener('pointerdown', e => {
+                isDragging = true;
+                el.style.cursor = 'grabbing';
+                // Get current position in case it changed (though here it's static initially)
+                data.x = el.offsetLeft;
+                data.y = el.offsetTop;
+                offset.x = e.clientX - data.x;
+                offset.y = e.clientY - data.y;
+                el.setPointerCapture(e.pointerId);
+            });
+            
+            window.addEventListener('pointermove', e => {
+                if (!isDragging) return;
+                data.x = e.clientX - offset.x;
+                data.y = e.clientY - offset.y;
+                el.style.left = `${data.x}px`;
+                el.style.top = `${data.y}px`;
+                // Update radius in case of resize, though it's usually static
+                data.radius = el.offsetWidth / 2;
+            });
+            
+            window.addEventListener('pointerup', () => {
+                isDragging = false;
+                el.style.cursor = 'grab';
+            });
+            
+            draggables.push(data);
+        });
     </script>
 </body>
 </html>
