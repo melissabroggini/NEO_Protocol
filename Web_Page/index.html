@@ -179,5 +179,59 @@
             <p>NASA 70TH ANNIVERSARY / FOR INFORMATIONAL PURPOSES ONLY / SYSTEM STATUS: NOMINAL</p>
         </footer>
     </div>
+    <script>
+        const Pretext = {
+            prepare: (text, font) => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                ctx.font = font;
+                return text.split('').map(char => ({
+                    char,
+                    width: ctx.measureText(char).width
+                }));
+            },
+            layout: (prepared, maxWidth, lineHeight) => {
+                let x = 0, y = 0;
+                return prepared.map(item => {
+                    if (item.char === '\n' || (item.char !== ' ' && x + item.width > maxWidth)) {
+                        x = 0; y += lineHeight;
+                    }
+                    const pos = { x, y, char: item.char };
+                    x += item.width;
+                    return pos;
+                });
+            }
+        };
+
+        function atomizeTitle() {
+            const title = document.querySelector('.hero h1');
+            if (!title) return [];
+            const text = title.innerText.replace(/\s+/g, ' ').trim();
+            const font = window.getComputedStyle(title).font;
+            const lineHeight = parseFloat(window.getComputedStyle(title).lineHeight);
+            
+            const prepared = Pretext.prepare(text, font);
+            const layout = Pretext.layout(prepared, title.offsetWidth, lineHeight);
+            
+            title.style.height = `${layout[layout.length-1].y + lineHeight}px`;
+            title.innerHTML = '';
+            title.style.position = 'relative';
+            
+            return layout.map(item => {
+                const span = document.createElement('span');
+                span.innerText = item.char;
+                span.style.position = 'absolute';
+                span.style.left = `${item.x}px`;
+                span.style.top = `${item.y}px`;
+                span.style.whiteSpace = 'pre';
+                span.style.willChange = 'transform';
+                title.appendChild(span);
+                return { el: span, x: item.x, y: item.y, vx: 0, vy: 0, curX: 0, curY: 0 };
+            });
+        }
+
+        // Call it to initialize
+        const letters = atomizeTitle();
+    </script>
 </body>
 </html>
