@@ -20,11 +20,29 @@
         
         .container { padding: 4vw; }
         .porthole { border-radius: 50%; object-fit: cover; background: #1f2937; }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 15vw; }
+            .hero .porthole { width: 40vw !important; height: 40vw !important; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Content will go here -->
+        <section class="hero" style="min-height: 90vh; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden;">
+            <h1 style="font-size: 10vw; z-index: 2;">EXPLORING<br>THE UNKNOWN<br>FOR SEVENTY<br>YEARS</h1>
+            
+            <!-- Portholes -->
+            <img src="https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=800&q=80" 
+                 class="porthole" 
+                 style="position: absolute; width: 30vw; height: 30vw; top: 0; right: 5vw; z-index: 1;" 
+                 alt="Earth from space">
+            
+            <img src="https://images.unsplash.com/photo-1454789548928-9efd52dc4031?auto=format&fit=crop&w=800&q=80" 
+                 class="porthole" 
+                 style="position: absolute; width: 20vw; height: 20vw; bottom: 10vh; right: 25vw; z-index: 3;" 
+                 alt="Astronaut">
+        </section>
     </div>
 </body>
 </html>
