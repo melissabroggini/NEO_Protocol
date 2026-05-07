@@ -15,11 +15,21 @@
         
         /* Brutalist Base */
         h1, h2, h3 { margin: 0; text-transform: uppercase; font-weight: 900; line-height: 0.85; letter-spacing: -0.05em; }
-        a { color: inherit; text-decoration: none; border-bottom: 1px solid currentColor; }
+        a { color: inherit; text-decoration: none; border-bottom: 1px solid currentColor; transition: background 0.3s ease, color 0.3s ease; }
         a:hover { background: #f9fafb; color: #000; }
         
         .container { padding: 4vw; }
-        .porthole { border-radius: 50%; object-fit: cover; background: #1f2937; }
+        .porthole { 
+            border-radius: 50%; 
+            object-fit: cover; 
+            background: #1f2937; 
+            filter: grayscale(100%) contrast(120%); 
+            transition: filter 0.5s ease, transform 0.5s ease;
+        }
+        .porthole:hover { 
+            filter: grayscale(0%) contrast(100%); 
+            transform: scale(1.05);
+        }
 
         .project-list { margin-top: 10vh; border-top: 2px solid #1f2937; }
         .project-row { 
@@ -165,6 +175,9 @@
                 </div>
             </div>
         </div>
+        <footer style="padding: 10vh 0; border-top: 2px solid #1f2937; color: #4b5563; font-size: 0.8rem; text-transform: uppercase; margin-top: 10vh;">
+            <p>NASA 70TH ANNIVERSARY / FOR INFORMATIONAL PURPOSES ONLY / SYSTEM STATUS: NOMINAL</p>
+        </footer>
     </div>
 </body>
 </html>
