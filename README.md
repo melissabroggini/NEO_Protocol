@@ -4,7 +4,7 @@ Docenti: A. Gysin, G. Profeta
 
 Progetto 1: La conquista dello spazio
 
-# NASA Neo-Sentinel
+# NEO PROTOCOL
 Autore: Melissa Broggini \
 [NASA Neo-Sentinel](https://github.com/melissabroggini/Media-Interactions)
 
