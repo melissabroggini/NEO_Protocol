@@ -6,7 +6,7 @@ Progetto 1: La conquista dello spazio
 
 # NEO PROTOCOL
 Autore: Melissa Broggini \
-[NASA Neo-Sentinel](https://github.com/melissabroggini/Media-Interactions)
+[NEO PROTOCOL](https://github.com/melissabroggini/Media-Interactions)
 
 
 ## Introduzione e tema
