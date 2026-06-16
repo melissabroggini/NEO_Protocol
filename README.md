@@ -10,7 +10,7 @@ Autore: Melissa Broggini \
 
 
 ## Introduzione e tema
-Neo-Sentinel è un'ecosistema web interattivo d'avanguardia progettato per monitorare in tempo reale i Near-Earth Objects (NEO). Sviluppato per celebrare il 70° anniversario della NASA, il progetto trasforma flussi di dati astrometrici complessi del Jet Propulsion Laboratory (JPL) in un'interfaccia di sorveglianza spaziale.
+Neo Protocol è un'ecosistema web interattivo d'avanguardia progettato per monitorare in tempo reale i Near-Earth Objects (NEO). Sviluppato per celebrare il 70° anniversario della NASA, il progetto trasforma flussi di dati astrometrici complessi del Jet Propulsion Laboratory (JPL) in un'interfaccia di sorveglianza spaziale.
 
 L'ispirazione estetica fonde l'intelligenza artificiale **JARVIS** di Iron Man con la pragmaticità visiva degli **HUD (Heads-Up Display)** dei jet militari e dei sistemi di puntamento avionici. L'utente non è un semplice spettatore, ma viene investito del ruolo di **Operatore di Monitoraggio**, agendo all'interno di un "Centro di Controllo" digitale dove la precisione scientifica incontra la narrazione sci-fi.
 
