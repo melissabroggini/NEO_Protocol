@@ -31,7 +31,7 @@
                         "surface-container-lowest": "#0e0e0e",
                         "inverse-primary": "#5c5e66",
                         "on-tertiary-fixed": "#ffffff",
-                        "surface": "#131313",
+                        "surface": "#000000",
                         "secondary": "#c8c6cb",
                         "on-primary-fixed-variant": "#e1e2ec",
                         "on-primary-container": "#000000",
@@ -41,7 +41,7 @@
                         "surface-container": "#1f1f1f",
                         "secondary-fixed": "#c8c6cb",
                         "inverse-on-surface": "#303030",
-                        "surface-dim": "#131313",
+                        "surface-dim": "#000000",
                         "secondary-container": "#47464b",
                         "surface-bright": "#393939",
                         "on-secondary-fixed": "#1b1b1f",
@@ -62,7 +62,7 @@
                         "surface-container-high": "#2a2a2a",
                         "on-error": "#690005",
                         "primary": "#ffffff",
-                        "background": "#131313",
+                        "background": "#000000",
                         "primary-container": "#d3d4dd",
                         "surface-tint": "#c5c6cf"
                     },
@@ -83,7 +83,7 @@
     </script>
     <style>
         body {
-            background-color: #131313;
+            background-color: #000000;
             color: #e2e2e2;
             font-family: 'Inter', sans-serif;
             margin: 0;
@@ -111,7 +111,7 @@
     </header>
     <main class="relative min-h-screen flex flex-col">
         <section class="relative h-screen w-full overflow-hidden flex items-center px-8 md:px-24">
-            <div class="absolute inset-0 z-0 bg-[#0a0a0a]" id="landing-3d-bg">
+            <div class="absolute inset-0 z-0 bg-[#000000]" id="landing-3d-bg">
                 <div class="absolute inset-0 bg-black/40 pointer-events-none z-10"></div>
             </div>
             <div class="relative z-10 max-w-4xl pt-20">
@@ -152,7 +152,7 @@
                 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
                 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
                 renderer.setSize(window.innerWidth, window.innerHeight);
-                renderer.setClearColor(0x050508, 1);
+                renderer.setClearColor(0x000000, 1);
                 renderer.toneMapping = THREE.ACESFilmicToneMapping;
                 renderer.toneMappingExposure = 1.2;
 
@@ -200,7 +200,7 @@
                 });
                 const earth = new THREE.Mesh(earthGeo, continentMat);
                 earth.add(new THREE.Mesh(new THREE.SphereGeometry(EARTH_R * 1.005, 32, 32), new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.1 })));
-                earth.add(new THREE.Mesh(new THREE.SphereGeometry(EARTH_R * 0.99, 32, 32), new THREE.MeshBasicMaterial({ color: 0x131313 })));
+                earth.add(new THREE.Mesh(new THREE.SphereGeometry(EARTH_R * 0.99, 32, 32), new THREE.MeshBasicMaterial({ color: 0x000000 })));
 
                 earth.rotation.z = 23.5 * Math.PI / 180;
                 earth.position.set(280, -50, -350);

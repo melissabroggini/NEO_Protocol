@@ -173,7 +173,7 @@ function createEarthAndMoon() {
     const wireMat = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.1 });
     earth.add(new THREE.Mesh(wireGeo, wireMat));
 
-    const coreMat = new THREE.MeshBasicMaterial({ color: 0x131313 });
+    const coreMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
     earth.add(new THREE.Mesh(new THREE.SphereGeometry(EARTH_RADIUS_VISUAL * 0.99, 32, 32), coreMat));
 
     earth.rotation.z = 23.5 * Math.PI / 180;
