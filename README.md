@@ -31,7 +31,6 @@ L'applicazione si struttura come una console interattiva di live tracking:
 - **Target Locking:** Cliccando su un asteroide (o tramite i controlli Prev/Next), il sistema esegue uno zoom cinematografico tramite TWEEN.js,"agganciando" la telecamera all'oggetto e rivelando un pannello dettagliato con: diametro stimato, velocità relativa, distanza minima dall'approccio e timestamp preciso. È inoltre presente il comando **"Get back to Earth"**, che permette all'operatore di resettare istantaneamente la visuale, riportando la Terra al centro dell'inquadratura. 
 
 ![Design dell'interfaccia 1](app/Img_1.jpg)
-![Design dell'interfaccia 2](app/Img_2.jpg)
 
 ## Tecnologia usata
 L'architettura del progetto si basa su tecnologie frontend native e librerie specializzate per la visualizzazione dati e 3D:
